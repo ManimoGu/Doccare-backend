@@ -1,5 +1,5 @@
 exports.mailgun = {
 
-    usename : 'postmaster@sandboxfb4c2c9d12b943af8402a4fdacc209ec.mailgun.org',
-    password : 'e6241d227cccc89d6d304d5f14a4684b-7b8c9ba8-d8cf2caa'
+    usename : 'postmaster@sandbox91f57add1ab746a28bc94acadd3e8ebf.mailgun.org',
+    password : '828afa246ac90bc8ae57ed7b77d9eb90-c3d1d1eb-4230dd65'
 }

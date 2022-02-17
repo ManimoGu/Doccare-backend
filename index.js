@@ -5,7 +5,6 @@ const cors = require("cors")
 const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend} = require("./API/auth");
-
 const { API_URL } = require("./config/api");
 
 //create an app 
@@ -25,10 +24,14 @@ app.listen("9000", (req, resp) => {
 
   app.use(cors())
 
-  app.get("/api/auth/register", register);
+  app.post("/api/auth/register", register);
 
   app.get("/api/verify-email/:login/code/:token", verify);
 
-  app.get("/api/Signin/:login/pass/:password", Signin);
+  app.post("/api/Signin/:login/pass/:password", Signin);
 
-  app.get("/api/resend/:login/code/:token", resend)
+  app.get("/api/resend/:login/code/:token", resend);
+
+  app.post("/api/fogot_password/:login",forgot)
+
+  

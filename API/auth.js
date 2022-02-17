@@ -1,4 +1,4 @@
-const { mailgun } = require("../config/Email");
+const { mailgun } = require("../Config/email");
 const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
@@ -7,26 +7,30 @@ const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 const { Email } = require("../Models/Email");
 const bcrypt = require("bcrypt");
-const {validationRegister} = require("../Helpers/validation")
+const {validationRegister} = require("../Helpers/validation");
+
 
 exports.register = async (req, resp) => {
+
+  console.log(req.body)
+  
   //fetch data
   let newDoctor = new Doctor(
-    "imane",
-    "guennach",
-    "cardio",
-    "WA183104",
-    "1564795960",
-    "guennach.imane@gmail.com"
+    req.body.nom,
+    req.body.prenom,
+    req.body.specialite,
+    req.body.CIN,
+    '',
+    req.body.email
   );
 
   let newCabinet = new Cabinet(
-    "adresse hello i am here",
-    "7530980949",
-    "guennach.imane@gmail.com"
+    req.body.adresse,
+    req.body.Tel,
+    req.body.email
   );
 
-  let newAccount = new Account("ManimoGue", "Amouna**91", "docteur");
+  let newAccount = new Account(req.body.login, req.body.password, "docteur");
 
   //validation des données
 
@@ -234,7 +238,7 @@ exports.forgot = async (Req, Resp) => {
    //verify if the login exist in teh data base
 
   if (res.length === 0) {
-    Resp.status(201).json({ message: "Email not found" });
+    Resp.status(201).json({ message: "Login not found" });
   } else {
 
     // See if the account is verified or not 

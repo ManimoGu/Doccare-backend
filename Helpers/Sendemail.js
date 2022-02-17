@@ -1,4 +1,4 @@
-const { mailgun } = require("../config/Email");
+const { mailgun } = require("../Config/email");
 const nodemailer = require("nodemailer");
 
 

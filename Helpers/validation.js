@@ -35,12 +35,12 @@ exports.validationRegister = (Doctor, Account, Cabinet) => {
         
       }
 
-      var pattern_tel = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
+     // var pattern_tel = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
       
-      if ( pattern_tel.test(Cabinet.tel) === false  ) {
+      //if ( pattern_tel.test(Cabinet.tel) === false  ) {
           
-        return "<h1>You should enter a valide phone format</h1>"
+       // return "<h1>You should enter a valide phone format</h1>"
     
-      }
+     // }
 
 }
