@@ -231,10 +231,13 @@ exports.forgot = async (Req, Resp) => {
   let login = Req.params.login;
 
   
+
+  
   let res = await sqlQuery(
-    `SELECT Fonction, Isverified FROM Account WHERE Login ='${login}'`
+    `SELECT Id, Fonction, Isverified FROM Account WHERE Login ='${login}'`
   );
 
+   console.log(res)
    //verify if the login exist in teh data base
 
   if (res.length === 0) {
@@ -242,8 +245,8 @@ exports.forgot = async (Req, Resp) => {
   } else {
 
     // See if the account is verified or not 
-
-    if (!res[0].ISVERIFIED) {
+     console.log(res[0].Isverified)
+    if (!res[0].Isverified) {
       Resp.status(201).json({ message: "You account is not verified" });
     } else {
 
@@ -254,22 +257,11 @@ exports.forgot = async (Req, Resp) => {
       let token = randomstring.generate();
 
       //create the redirected link to the frontend page
-      let endpoint = `http://localhost:3000/ResetPass/${login}/code/${token}`;
+      let endpoint = `http://localhost:3000/Resetpassword/${login}/code/${token}`;
 
       // Get the email from the database
-
-      let fonction = "";
-  
-      if (res[0].Fonction === "Docteur") {
-        fonction = "Docteur";
-      } else if (res[0].Fonction === "Assistante") {
-        fonction = "Assistante";
-      } else {
-        fonction = "Patient";
-      }
-  
       let mail = await sqlQuery(
-        `Select Email from ${fonction} where Account = ${res[0].Id}`
+        `Select Email from ${res[0].Fonction} where Account = ${res[0].Id}`
       );
 
       //send the mail
