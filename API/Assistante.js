@@ -4,50 +4,32 @@ const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
 
-exports.DoctorProfil = async (req, Resp) => {
-  let login = req.params.login;
-  let pass = req.params.password;
 
+exports.AssistanteList = async (req, resp) => {
   try {
-    let res = await sqlQuery(
-      `SELECT  Id FROM Account WHERE Login ='${login}' and Password='${pass}' `
-    );
+    let res = await sqlQuery(`SELECT * FROM assistante`);
 
-    if (res.length === 0) {
-      Resp.status(201).json({
-        message: "Nom d'utilisateur ou mot de passe nom trouvables",
-      });
-    } else {
-      let result = await sqlQuery(
-        `SELECT * FROM cabinet join docteur on cabinet.Id = docteur.Cabinet join account on docteur.Account = account.Id WHERE docteur.Account ='${res[0].Id}' `
-      );
-
-      if (result.length === 0)
-        Resp.status(201).json({ message: "Compte introuvable" });
-      else {
-        Resp.status(201).json({
-          profil: result,
-        });
-      }
-    }
+    resp.status(201).json({
+      ListAssistante: res,
+    });
   } catch (err) {
     console.log(err.message);
   }
 };
 
-exports.AddDoctor = async (req, resp) => {
+exports.AddAssistante = async (req, resp) => {
   let Cab = req.params.cabinet;
 
-  let newDoctor = new Doctor(
+  let newAssistance = new Assistante(
     req.body.nom,
     req.body.prenom,
-    req.body.specialite,
     req.body.CIN,
     req.body.tel,
-    req.body.email
+    req.body.adresse,
+    Cab
   );
 
-  let newAccount = new Account(req.body.login, req.body.password, "docteur");
+  let newAccount = new Account(req.body.login, req.body.password, "Assistante");
 
   if (validationRegister(newDoctor, newAccount, newCabinet))
     resp
@@ -81,17 +63,21 @@ exports.AddDoctor = async (req, resp) => {
         //create de endpoint of the api
         let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
 
+        let Mail = await sqlQuery(
+          `SELECT Email  FROM cabinet WHERE Id = '${Cab}'`
+        );
+
         //send the mail
 
         let userInfo = new Email(
           "imane@support.com",
-          newDoctor.email,
+          Mail[0].Email,
           "email verification ✔",
           `<h1>thanks for your registration</h1>
-            Click the link below to verify your email
-            <a href=${endpoint}>Verify</a>
-            the link will be expired after 24 hours 
-            `,
+                  Click the link below to verify your email
+                  <a href=${endpoint}>Verify</a>
+                  the link will be expired after 24 hours 
+                  `,
           endpoint
         );
 
@@ -103,19 +89,18 @@ exports.AddDoctor = async (req, resp) => {
         console.log(newAccount);
 
         let query = `INSERT INTO Account Set ?`;
-        let query2 = `INSERT INTO Docteur Set ?`;
+        let query2 = `INSERT INTO Assistante Set ?`;
 
         if (sqlQuery(query, newAccount)) {
           let res = await sqlQuery(`SELECT * FROM Account `);
 
-          newDoctor.Account = res[res.length - 1].Id;
-          newDoctor.Cabinet = Cab;
+          newAssistance.Account = res[res.length - 1].Id;
 
-          if (sqlQuery(query2, newDoctor)) {
+          if (sqlQuery(query2, newAssistance)) {
             SendEmail(userInfo);
           }
 
-          console.log(newDoctor);
+          console.log(newAssistance);
         }
       }
     } catch (err) {
@@ -124,15 +109,15 @@ exports.AddDoctor = async (req, resp) => {
   }
 };
 
-exports.DeleteDoctor = async (req, resp) => {
-  let IdDoctor = req.params.id;
+exports.DeleteAssistante = async (req, resp) => {
+  let IdAssistante = req.params.id;
 
   try {
     let res = await sqlQuery(
-      `SELECT Account  FROM docteur WHERE Id = '${IdDoctor}'`
+      `SELECT Account  FROM Assistante WHERE Id = '${IdAssistante}'`
     );
 
-    if (sqlQuery(`DELETE FROM docteur WHERE Id ='${IdDoctor}'`)) {
+    if (sqlQuery(`DELETE FROM Assistante WHERE Id ='${IdAssistante}'`)) {
       if (sqlQuery(`DELETE FROM Account WHERE Id ='${res[0].Account}'`)) {
         resp
           .status(201)
@@ -144,22 +129,22 @@ exports.DeleteDoctor = async (req, resp) => {
   }
 };
 
-exports.UpdateDoctor = async (req, resp) => {
-  let IdDoctor = req.params.id;
+exports.UpdateAssistante = async (req, resp) => {
 
-  let newDoctor = new Doctor(
+  let IdAssistante = req.params.id;
+
+  let newAssistance = new Assistante(
     req.body.nom,
     req.body.prenom,
-    req.body.specialite,
     req.body.CIN,
     req.body.tel,
-    req.body.email
+    req.body.adresse
   );
 
   try {
     if (
-      sqlQuery(
-        `UPDATE docteur SET Nom = '${newDoctor.nom}', Prénom = '${newDoctor.prénom}', Spécialité = '${newDoctor.spécialité}', CIN =' ${newDoctor.CIN}', Tel = '${newDoctor.tel}', Email = '${newDoctor.email}' WHERE Id ='${IdDoctor}'`
+       sqlQuery(
+        `UPDATE docteur SET Nom = '${newAssistance.nom}', Prénom = '${newAssistance.prénom}', CIN =' ${newAssistance.CIN}', Tel = '${newAssistance.tel}', Adresse = '${newAssistance.adresse}' WHERE Id ='${IdAssistante}'`
       )
     ) {
 
@@ -171,19 +156,3 @@ exports.UpdateDoctor = async (req, resp) => {
     console.log(err.message);
   }
 };
-
-exports.DoctorList = async (req, resp) => {
-
-try{
-    let res = await sqlQuery(
-        `SELECT * FROM docteur`
-      );
-      
-      resp.status(201).json({
-        ListDoctor: res
-      });
-
-
-    }catch(err){console.log(err.message)}
-
-}

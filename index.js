@@ -6,7 +6,8 @@ const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass} = require("./API/auth");
 const { API_URL } = require("./config/api");
-const { DoctorProfil, AddDoctor, DeleteDoctor } = require("./API/doctor");
+const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
+const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
 
 //create an app 
 
@@ -47,3 +48,18 @@ app.listen("9000", (req, resp) => {
   app.get("/api/Doctor/AddDoctor/:cabinet", AddDoctor);
 
   app.get("/api/Doctor/DeleteDoctor/:Id", DeleteDoctor);
+  
+  app.get("/api/Doctor/UpdateDoctor/:Id", UpdateDoctor);
+
+  app.get("/api/Doctor/DoctorList", DoctorList);
+
+
+  // Assistante API 
+
+  app.get("/api/Doctor/AddAssistante/:cabinet", AddAssistante);
+
+  app.get("/api/Doctor/DeleteAssistante/:Id", DeleteAssistante);
+  
+  app.get("/api/Doctor/UpdateAssistante/:Id",UpdateAssistante);
+
+  app.get("/api/Doctor/AssistanteList", AssistanteList);
