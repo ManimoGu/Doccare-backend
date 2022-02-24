@@ -6,6 +6,7 @@ const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass} = require("./API/auth");
 const { API_URL } = require("./config/api");
+const { DoctorProfil, AddDoctor, DeleteDoctor } = require("./API/doctor");
 
 //create an app 
 
@@ -24,6 +25,9 @@ app.listen("9000", (req, resp) => {
 
   app.use(cors())
 
+
+  // Signin API
+
   app.post("/api/auth/register", register);
 
   app.get("/api/verify-email/:login/code/:token", verify);
@@ -36,4 +40,10 @@ app.listen("9000", (req, resp) => {
 
   app.post("/api/resetpassword/:login/code/:token", resetPass)
 
-  
+  // Doctors API 
+
+  app.get("/api/Doctor/DoctorProfil/:login/password/:password", DoctorProfil);
+
+  app.get("/api/Doctor/AddDoctor/:cabinet", AddDoctor);
+
+  app.get("/api/Doctor/DeleteDoctor/:Id", DeleteDoctor);

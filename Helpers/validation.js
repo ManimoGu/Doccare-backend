@@ -2,7 +2,7 @@ exports.validationRegister = (Doctor, Account, Cabinet) => {
 
      // FirstName
     if (Doctor.nom.length < 4 || Doctor.nom.length > 20) {
-        return "<h1>firstname should contain from 4 to 20 caracters</h1>"
+        return "firstname should contain from 4 to 20 caracters"
       }
   
       //LastName
@@ -13,7 +13,7 @@ exports.validationRegister = (Doctor, Account, Cabinet) => {
 
        //LastName
        if (Account.login.length < 8 ) {
-        return "<h1>login should be more than 8 caracter</h1>"
+        return "login should be more than 8 caracter"
         
         }
 
@@ -22,7 +22,7 @@ exports.validationRegister = (Doctor, Account, Cabinet) => {
   
       if ( pattern.test(Account.password) === false ) {
           
-        return "<h1>The password should contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character</h1>"
+        return "The password should contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
         
       }
   
@@ -31,7 +31,7 @@ exports.validationRegister = (Doctor, Account, Cabinet) => {
   
      if ( pattern_email.test(Cabinet.email) === false  ) {
           
-            return "<h1>Email Should be like : Example@Example.com</h1>"
+            return "Email Should be like : Example@Example.com"
         
       }
 

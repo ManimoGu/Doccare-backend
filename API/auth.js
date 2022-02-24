@@ -7,106 +7,113 @@ const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 const { Email } = require("../Models/Email");
 const bcrypt = require("bcrypt");
-const {validationRegister} = require("../Helpers/validation");
-
+const { validationRegister } = require("../Helpers/validation");
 
 exports.register = async (req, resp) => {
+  console.log(req.body);
 
-  console.log(req.body)
-  
   //fetch data
   let newDoctor = new Doctor(
     req.body.nom,
     req.body.prenom,
     req.body.specialite,
     req.body.CIN,
-    '',
+    "",
     req.body.email
   );
 
-  let newCabinet = new Cabinet(
-    req.body.adresse,
-    req.body.Tel,
-    req.body.email
-  );
+  let newCabinet = new Cabinet(req.body.adresse, req.body.Tel, req.body.email);
 
   let newAccount = new Account(req.body.login, req.body.password, "docteur");
 
   //validation des données
 
- if (validationRegister(newDoctor, newAccount, newCabinet))
-  resp.status(403).json({ message: validationRegister(newDoctor, newAccount, newCabinet) });
+  if (validationRegister(newDoctor, newAccount, newCabinet))
+    resp
+      .status(403)
+      .json({ message: validationRegister(newDoctor, newAccount, newCabinet) });
   else {
-  try {
-    let res = await sqlQuery(
-      `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
-    );
+    try {
+      let res = await sqlQuery(
+        `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
+      );
 
-    console.log(res);
+      console.log(res);
 
-    if (res.length !== 0) {
-      if (res[0].ISVERIFIED) {
-        resp.status(201).json({ message: "<h1>username already exists</h1>" });
-      } else if (!res[0].ISVERIFIED) {
-        resp.status(201).json({
-          message:
-            "<h1>You should verify your account, an mail was sent to your email adress</h1>",
-        });
-      }
-    } else {
-      newAccount.isverified = false;
-      newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
-      newAccount.token = randomstring.generate({
-        length: 4,
-        charset: "numeric",
-      });
+      if (res.length !== 0) {
+        if (res[0].ISVERIFIED) {
+          resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
+        } else if (!res[0].ISVERIFIED) {
+          resp.status(201).json({
+            message:
+              "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
+          });
+        }
+      } else {
+        let res = await sqlQuery(
+          `SELECT *  FROM cabinet  WHERE Email = '${newCabinet.email}'`
+        );
 
-      //create de endpoint of the api
-      let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
+        if (res.length !== 0) {
+          resp
+            .status(201)
+            .json({ message: "Cet email est déja associé à un autre cabinet" });
 
-      //send the mail
+        } else {
+          newAccount.isverified = false;
+          newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
+          newAccount.token = randomstring.generate({
+            length: 4,
+            charset: "numeric",
+          });
 
-      let userInfo = new Email(
-        "imane@support.com",
-        newCabinet.email,
-        "email verification ✔",
-        `<h1>thanks for your registration</h1>
+          //create de endpoint of the api
+          let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
+
+          //send the mail
+
+          let userInfo = new Email(
+            "imane@support.com",
+            newCabinet.email,
+            "email verification ✔",
+            `<h1>thanks for your registration</h1>
             Click the link below to verify your email
             <a href=${endpoint}>Verify</a>
             the link will be expired after 24 hours 
             `,
-        endpoint
-      );
+            endpoint
+          );
 
-      //insert user
+          //insert user
 
-      let result = await bcrypt.hash(newAccount.password, 10);
-      newAccount.password = result;
+          let result = await bcrypt.hash(newAccount.password, 10);
+          newAccount.password = result;
 
-      console.log(newAccount);
+          console.log(newAccount);
 
-      let query = `INSERT INTO Account Set ?`;
-      let query1 = `INSERT INTO Cabinet Set ?`;
-      let query2 = `INSERT INTO Doctor Set ?`;
+          let query = `INSERT INTO Account Set ?`;
+          let query1 = `INSERT INTO Cabinet Set ?`;
+          let query2 = `INSERT INTO Docteur Set ?`;
 
-      if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
-        let res = await sqlQuery(`SELECT * FROM Account `);
-        let result = await sqlQuery(`SELECT * FROM Cabinet `);
+          if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
+            let res = await sqlQuery(`SELECT * FROM Account `);
+            let result = await sqlQuery(`SELECT * FROM Cabinet `);
 
-        newDoctor.Cabinet = result[result.length - 1].Id;
-        newDoctor.Account = res[res.length - 1].Id;
+            newDoctor.Cabinet = result[result.length - 1].Id;
+            newDoctor.Account = res[res.length - 1].Id;
 
-        if (sqlQuery(query2, newDoctor)) {
-          SendEmail(userInfo);
+            if (sqlQuery(query2, newDoctor)) {
+              SendEmail(userInfo);
+            }
+
+            console.log(newDoctor);
+          }
         }
-
-        console.log(newDoctor);
       }
+    } catch (err) {
+      console.log(err.message);
     }
-  } catch (err) {
-    console.log(err.message);
   }
-}
 };
 
 exports.verify = async (Req, Resp) => {
@@ -118,15 +125,15 @@ exports.verify = async (Req, Resp) => {
   );
 
   if (res.length === 0) {
-    Resp.status(201).json({ message: "Token or login are unvalid" });
+    Resp.status(201).json({ message: "Token ou nom d'utilisateur invalides" });
   } else {
     if (Date.now() > res[0].ExpirationDat) {
       let link = `http://localhost:9000/api/resend/${login}/code/${Token}`;
 
       Resp.send(`
              
-             <h1>This link has already expired</h1>
-             <h5>Click on <a href= ${link}> resend </a>to get a valid link </h5>       
+             <h1>Ce lien a déja expiré</h1>
+             <h5>Cliquez sur <a href= ${link}> renvoyer </a>pour avoir un nouveau lien valide </h5>       
              `);
     } else {
       let rest = await sqlQuery(
@@ -135,8 +142,8 @@ exports.verify = async (Req, Resp) => {
 
       Resp.send(`
           
-             <h1>You account has been verified</h1>
-             <a href= "http://localhost:3000/Login">Login in</a>
+             <h1>Votre compte a été vérifier avec succés</h1>
+             <a href= "http://localhost:3000/Signin">se connceter</a>
              
              `);
     }
@@ -152,7 +159,7 @@ exports.resend = async (Req, Resp) => {
   );
 
   if (res.length === 0) {
-    Resp.send("<h1>The account doesn't exists</h1>");
+    Resp.send("<h1>ce compte existe déja</h1>");
   } else {
     let date = new Date(Date.now() + 24 * 60 * 60 * 1000)
       .toISOString()
@@ -201,7 +208,7 @@ exports.resend = async (Req, Resp) => {
     ) {
       SendEmail(userInfo);
 
-      Resp.send("<h1> Check your email to verify your account </h1>");
+      Resp.send("<h1> Vérifier votre email pour valider votre compte </h1>");
     }
   }
 };
@@ -213,43 +220,38 @@ exports.Signin = async (Req, Resp) => {
   let res = await sqlQuery(` Select * from Account where Login = '${login}'`);
 
   if (res.length === 0) {
-    Resp.status(201).json({ message: "Invalid Email" });
+    Resp.status(201).json({ message: "Nom d'utilisqteur invalide" });
   } else {
     bcrypt.compare(pass, res[0].Password, (err, result) => {
-
-      if (!result) Resp.status(201).json({ message: "Incorrect password" });
+      if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
       else {
-        Resp.status(201).json({ message: "You are loged in" });
+        Resp.status(201).json({ message: "Vous êtes connecté" });
       }
     });
   }
 };
 
 exports.forgot = async (Req, Resp) => {
-
   // get the login from the url defined in the frontend
   let login = Req.params.login;
 
-  
-
-  
   let res = await sqlQuery(
     `SELECT Id, Fonction, Isverified FROM Account WHERE Login ='${login}'`
   );
 
-   console.log(res)
-   //verify if the login exist in teh data base
+  console.log(res);
+  //verify if the login exist in teh data base
 
   if (res.length === 0) {
-    Resp.status(201).json({ message: "Login not found" });
+    Resp.status(201).json({ message: "Nom d'utilisateur introuvable" });
   } else {
-
-    // See if the account is verified or not 
-     console.log(res[0].Isverified)
+    // See if the account is verified or not
+    console.log(res[0].Isverified);
     if (!res[0].Isverified) {
-      Resp.status(201).json({ message: "You account is not verified" });
+      Resp.status(201).json({
+        message: "Vous n'avez pas encore vérifier votre compte",
+      });
     } else {
-
       let date = new Date(Date.now() + 24 * 60 * 60 * 1000)
         .toISOString()
         .slice(0, 19)
@@ -287,7 +289,7 @@ exports.forgot = async (Req, Resp) => {
 
         Resp.send(`
            
-           <h1> Please check your email  </h1>
+           <h1> Merci de vérifier votre email  </h1>
            
            `);
       }
@@ -295,52 +297,43 @@ exports.forgot = async (Req, Resp) => {
   }
 };
 
-exports.resetPass = async(Req, Resp)=>{
-
+exports.resetPass = async (Req, Resp) => {
   let login = Req.params.login;
   let Token = Req.params.token;
 
-  let pass = Req.body
+  let pass = Req.body;
 
-  console.log(pass)
+  console.log(pass);
 
-  let res = await sqlQuery(`SELECT  ExpirationDat FROM Account WHERE Login ='${login}' and TOKEN='${Token}' `)
+  let res = await sqlQuery(
+    `SELECT  ExpirationDat FROM Account WHERE Login ='${login}' and TOKEN='${Token}' `
+  );
 
-        if(res.length === 0){
+  if (res.length === 0) {
+    Resp.status(201).json({ message: "Token Invalid " });
+  } else {
+    if (res[0].ExpirationDat < Date.now()) {
+      let link = `http://localhost:9000/api/resend/${login}/code/${Token}`;
 
-          Resp.status(201).json({message :"Invalid Token"})
-          
-        }else{
-
-          if(res[0].ExpirationDat < Date.now()){
-
-            let link = `http://localhost:9000/api/resend/${login}/code/${Token}`
-
-            Resp.send(`
+      Resp.send(`
            
-            <h1>This link has already expired</h1>
-            <h5>Click on <a href=${link}> resend </a>to get a valid link </h5>       
-            `)     
+            <h1>Ce lien est déja expiré</h1>
+            <h5>Cliquer sur <a href=${link}> renvoyer </a>pour avoir un nouveau email valide </h5>       
+            `);
+    } else {
+      let result = await bcrypt.hash(pass.password, 10);
 
-          }else {
-
-            let result = await bcrypt.hash(pass.password, 10)
-
-          if (sqlQuery(`UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`))
-         
-          Resp.send(`
+      if (
+        sqlQuery(
+          `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
+        )
+      )
+        Resp.send(`
            
-          <h1> Password changed successfully </h1>
-          <a href= "http://localhost:3000/Login">Login in to your account</a>
+          <h1> Votre mot de passe a été changer avec succés </h1>
+          <a href= "http://localhost:3000/Login">Connectez vous</a>
           
-          `)     
-
-
-        }
-
-        }
-
-
-}
-
-
+          `);
+    }
+  }
+};
