@@ -3,6 +3,7 @@ const randomstring = require("randomstring");
 const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
+const bcrypt = require('bcrypt')
 
 exports.DoctorProfil = async (req, Resp) => {
   let login = req.params.login;
@@ -10,27 +11,39 @@ exports.DoctorProfil = async (req, Resp) => {
 
   try {
     let res = await sqlQuery(
-      `SELECT  Id FROM Account WHERE Login ='${login}' and Password='${pass}' `
+      `SELECT  * FROM Account WHERE Login ='${login}' `
     );
-
+    
+    
     if (res.length === 0) {
       Resp.status(201).json({
-        message: "Nom d'utilisateur ou mot de passe nom trouvables",
+        message: "Nom d'utilisateur introuvables",
       });
     } else {
-      let result = await sqlQuery(
-        `SELECT * FROM cabinet join docteur on cabinet.Id = docteur.Cabinet join account on docteur.Account = account.Id WHERE docteur.Account ='${res[0].Id}' `
-      );
 
-      if (result.length === 0)
-        Resp.status(201).json({ message: "Compte introuvable" });
-      else {
-        Resp.status(201).json({
-          profil: result,
-        });
-      }
+      let result = await bcrypt.compare(pass, res[0].Password) 
+        if (!result)
+          Resp.status(201).json({ message: "Mot de passe incorrect" });
+        else {
+
+          let response = await sqlQuery(
+            `SELECT * FROM cabinet join docteur on cabinet.Id = docteur.Cabinet join account on docteur.Account = account.Id WHERE docteur.Account ='${res[0].Id}' `
+          );
+
+          console.log(response)
+
+          if (response.length === 0)
+            Resp.status(201).json({ message: "Compte introuvable" });
+          else {
+            Resp.status(201).json({
+              profil: response,
+            });
+          }
+        
+     
     }
-  } catch (err) {
+  } 
+} catch (err) {
     console.log(err.message);
   }
 };
@@ -162,10 +175,9 @@ exports.UpdateDoctor = async (req, resp) => {
         `UPDATE docteur SET Nom = '${newDoctor.nom}', Prénom = '${newDoctor.prénom}', Spécialité = '${newDoctor.spécialité}', CIN =' ${newDoctor.CIN}', Tel = '${newDoctor.tel}', Email = '${newDoctor.email}' WHERE Id ='${IdDoctor}'`
       )
     ) {
-
-        resp
-          .status(201)
-          .json({ message: "Les informations ont été modifier avec succés" });
+      resp
+        .status(201)
+        .json({ message: "Les informations ont été modifier avec succés" });
     }
   } catch (err) {
     console.log(err.message);
@@ -173,17 +185,13 @@ exports.UpdateDoctor = async (req, resp) => {
 };
 
 exports.DoctorList = async (req, resp) => {
+  try {
+    let res = await sqlQuery(`SELECT * FROM docteur`);
 
-try{
-    let res = await sqlQuery(
-        `SELECT * FROM docteur`
-      );
-      
-      resp.status(201).json({
-        ListDoctor: res
-      });
-
-
-    }catch(err){console.log(err.message)}
-
-}
+    resp.status(201).json({
+      ListDoctor: res,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};
