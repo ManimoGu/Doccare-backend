@@ -26,7 +26,16 @@ exports.DoctorProfil = async (req, Resp) => {
           Resp.status(201).json({ message: "Mot de passe incorrect" });
         else {
 
-          let response = await sqlQuery(
+          let newAccount = new Account(res[0].login, res[0].password, res[0].fonction, res[0].Token, res[0].Isverified, res[0].expirationDat);
+
+          let DoctorInfo = await sqlQuery(
+            `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
+          );
+
+          let newDoctor = new Doctor(DoctorInfo[0].Nom, DoctorInfo[0].Prénom, DoctorInfo[0].Spécialité, DoctorInfo[0].CIN, DoctorInfo[0].Tel, DoctorInfo[0].Email, DoctorInfo.Cabinet, DoctorInfo.Account);
+
+
+          let response = await sqlQuery
             `SELECT * FROM cabinet join docteur on cabinet.Id = docteur.Cabinet join account on docteur.Account = account.Id WHERE docteur.Account ='${res[0].Id}' `
           );
 
