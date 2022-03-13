@@ -3,56 +3,43 @@ const randomstring = require("randomstring");
 const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
-const bcrypt = require('bcrypt')
+const bcrypt = require("bcrypt");
 
 exports.DoctorProfil = async (req, Resp) => {
   let login = req.params.login;
   let pass = req.params.password;
 
   try {
-    let res = await sqlQuery(
-      `SELECT  * FROM Account WHERE Login ='${login}' `
-    );
-    
-    
+    let res = await sqlQuery(`SELECT  * FROM Account WHERE Login ='${login}' `);
+
     if (res.length === 0) {
       Resp.status(201).json({
         message: "Nom d'utilisateur introuvables",
       });
     } else {
+      let result = await bcrypt.compare(pass, res[0].Password);
+      if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
+      else {
+        let DoctorInfo = await sqlQuery(
+          `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
+        );
 
-      let result = await bcrypt.compare(pass, res[0].Password) 
-        if (!result)
-          Resp.status(201).json({ message: "Mot de passe incorrect" });
+        let CabinetInfo = await sqlQuery(
+          `SELECT * FROM cabinet WHERE  Id ='${DoctorInfo[0].Cabinet}' `
+        );
+
+        if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
+          Resp.status(201).json({ message: "Compte introuvable" });
         else {
-
-          let newAccount = new Account(res[0].login, res[0].password, res[0].fonction, res[0].Token, res[0].Isverified, res[0].expirationDat);
-
-          let DoctorInfo = await sqlQuery(
-            `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
-          );
-
-          let newDoctor = new Doctor(DoctorInfo[0].Nom, DoctorInfo[0].Prénom, DoctorInfo[0].Spécialité, DoctorInfo[0].CIN, DoctorInfo[0].Tel, DoctorInfo[0].Email, DoctorInfo.Cabinet, DoctorInfo.Account);
-
-
-          let response = await sqlQuery
-            `SELECT * FROM cabinet join docteur on cabinet.Id = docteur.Cabinet join account on docteur.Account = account.Id WHERE docteur.Account ='${res[0].Id}' `
-          );
-
-          console.log(response)
-
-          if (response.length === 0)
-            Resp.status(201).json({ message: "Compte introuvable" });
-          else {
-            Resp.status(201).json({
-              profil: response,
-            });
-          }
-        
-     
+          Resp.status(201).json({
+            Doctor: DoctorInfo,
+            AccountInfo: res,
+            CabinetInfos: CabinetInfo
+          });
+        }
+      }
     }
-  } 
-} catch (err) {
+  } catch (err) {
     console.log(err.message);
   }
 };

@@ -222,6 +222,7 @@ exports.Signin = async (Req, Resp) => {
   if (res.length === 0) {
     Resp.status(201).json({ message: "Nom d'utilisqteur invalide" });
   } else {
+    console.log("hello")
     bcrypt.compare(pass, res[0].Password, (err, result) => {
       if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
       else {
@@ -229,6 +230,7 @@ exports.Signin = async (Req, Resp) => {
       }
     });
   }
+ 
 };
 
 exports.forgot = async (Req, Resp) => {
