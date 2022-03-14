@@ -1,19 +1,18 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 
-exports.ReviewsNbr = async (req, resp) =>{
+exports.ReviewsNbr = async (req, resp) => {
+  let Cab = req.params.id;
 
-    let Cab = req.params.Id;
-
-    try{
-    
-    let res = sqlQuery(`SELECT couunt (*) FROM feedback WHERE Cabinet = ${Cab} and type = 'Avis'`)
-
+  try {
+    let res = await sqlQuery(
+      `SELECT COUNT(*) as nbr FROM feedback WHERE Cabinet = ${Cab} and type = 'Avis'`
+    );
+     
     resp.status(201).json({
-        NbrAvis: res,
-      });
-
-    }catch(err){console.log(err.message)}
-
-
-}
+      NbrAvis: res[0].nbr,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};

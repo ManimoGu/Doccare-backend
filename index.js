@@ -10,7 +10,7 @@ const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = requ
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
 const { PatientNbr } = require("./API/Patient");
 const { ReviewsNbr } = require("./API/Reviews");
-const { ConsultationNbr } = require("./API/Consultations");
+const { ConsultationNbr, ConsultationTotal } = require("./API/Consultations");
 
 //create an app 
 
@@ -81,4 +81,5 @@ app.listen("9000", (req, resp) => {
 
 
 app.get("/api/Doctor/NombreConsultation/id/:id", ConsultationNbr);
+app.get("/api/Doctor/TotalConsultation/id/:id", ConsultationTotal);
 
