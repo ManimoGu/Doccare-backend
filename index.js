@@ -8,6 +8,7 @@ const { register, verify, Signin, resend, forgot, resetPass} = require("./API/au
 const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
+const { PatientNbr } = require("./API/Patient");
 
 //create an app 
 
@@ -63,3 +64,9 @@ app.listen("9000", (req, resp) => {
   app.get("/api/Doctor/UpdateAssistante/:Id",UpdateAssistante);
 
   app.get("/api/Doctor/AssistanteList", AssistanteList);
+
+  // Patient API 
+
+  app.get("/api/Doctor/NombredePatient/id/:id", PatientNbr);
+
+
