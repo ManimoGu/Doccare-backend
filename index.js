@@ -9,6 +9,8 @@ const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
 const { PatientNbr } = require("./API/Patient");
+const { ReviewsNbr } = require("./API/Reviews");
+const { ConsultationNbr } = require("./API/Consultations");
 
 //create an app 
 
@@ -69,4 +71,14 @@ app.listen("9000", (req, resp) => {
 
   app.get("/api/Doctor/NombredePatient/id/:id", PatientNbr);
 
+
+  // Feedback API
+
+  app.get("/api/Doctor/NombredAvis/id/:id", ReviewsNbr);
+
+
+  // Consultation API 
+
+
+app.get("/api/Doctor/NombreConsultation/id/:id", ConsultationNbr);
 
