@@ -2,18 +2,21 @@ const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 
 exports.DashList = async (req, resp) => {
-  let Cab = req.params.Id;
+
+  let Cab = req.params.id;
+ console.log(Cab)
 
   try {
 
     let List = await sqlQuery(
-      `SELECT Nom, Prénom, Type, Date_naissance FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
+      `SELECT Patient.id,Nom, Prénom, Heure ,Type, Date_naissance as Date, avatar, Civilité FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
     
 
    resp.status(201).json({
      listCons: List
    });
+   console.log(List)
   } catch (err) {
     console.log(err.message);
   }
