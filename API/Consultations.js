@@ -11,12 +11,13 @@ exports.DashList = async (req, resp) => {
     let List = await sqlQuery(
       `SELECT Patient.id,Nom, Prénom, Heure ,Type, Date_naissance as Date, avatar, Civilité FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
-    
+       
 
    resp.status(201).json({
      listCons: List
    });
-   console.log(List)
+   console.log(List
+    )
   } catch (err) {
     console.log(err.message);
   }

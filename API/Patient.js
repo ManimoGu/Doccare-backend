@@ -3,7 +3,22 @@ const randomstring = require("randomstring");
 
 exports.PatientDash = async (req, resp) => {};
 
-exports.PatientList = async (req, resp) => {};
+exports.PatientList = async (req, resp) => {
+
+  let Cab = req.params.id;
+
+
+  try {
+    let res = await sqlQuery(`SELECT * FROM Patient join dossier_medical on Patient.id = dossier_medical.Patient WHERE Cabinet = '${Cab}'`);
+    console.log(res)
+    resp.status(201).json({
+      ListPatient: res
+    });
+    
+  } catch (err) {
+    console.log(err.message);
+  }
+};
 
 exports.PatientNbr = async (req, resp) => {
   let Cab = req.params.Id;
