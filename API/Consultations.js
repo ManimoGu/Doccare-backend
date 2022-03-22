@@ -4,7 +4,6 @@ const randomstring = require("randomstring");
 exports.DashList = async (req, resp) => {
 
   let Cab = req.params.id;
- console.log(Cab)
 
   try {
 
@@ -23,7 +22,31 @@ exports.DashList = async (req, resp) => {
   }
 };
 
-exports.ConsultationList = async (req, resp) => {};
+exports.ConsultationList = async (req, resp) => {
+
+  let Cab = req.params.id;
+  console.log(Cab)
+
+  try {
+
+    let List = await sqlQuery(
+      `SELECT * FROM Consultation join rdv on consultation.Rdv = rdv.id WHERE Cabinet = '${Cab}'`
+    );
+       
+
+   resp.status(201).json({
+      AllCons: List
+   });
+   console.log(List
+    )
+  } catch (err) {
+    console.log(err.message);
+  }
+
+
+
+
+};
 
 exports.ConsultationNbr = async (req, resp) => {
   let Cab = req.params.Id;
