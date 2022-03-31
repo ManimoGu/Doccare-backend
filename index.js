@@ -61,11 +61,11 @@ app.listen("9000", (req, resp) => {
 
   app.get("/api/Doctor/AddAssistante/:cabinet", AddAssistante);
 
-  app.get("/api/Doctor/DeleteAssistante/:Id", DeleteAssistante);
+  app.get("/api/Doctor/DeleteAssistante/:id", DeleteAssistante);
   
-  app.get("/api/Doctor/UpdateAssistante/:Id",UpdateAssistante);
+  app.get("/api/Doctor/UpdateAssistante/:id",UpdateAssistante);
 
-  app.get("/api/Doctor/AssistanteList", AssistanteList);
+  app.get("/api/Doctor/AssistanteList/id/:id", AssistanteList);
 
   // Patient API 
 

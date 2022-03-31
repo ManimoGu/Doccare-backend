@@ -6,8 +6,11 @@ const { Account } = require("../models/Account");
 
 
 exports.AssistanteList = async (req, resp) => {
+
+  let Cab = req.params.id
+
   try {
-    let res = await sqlQuery(`SELECT * FROM assistante`);
+    let res = await sqlQuery(`SELECT * FROM assistante Where Cabinet = '${Cab}'`);
 
     resp.status(201).json({
       ListAssistante: res,

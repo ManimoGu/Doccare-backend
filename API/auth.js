@@ -95,6 +95,8 @@ exports.register = async (req, resp) => {
           let query1 = `INSERT INTO Cabinet Set ?`;
           let query2 = `INSERT INTO Docteur Set ?`;
 
+          let res = await sqlQuery(query, newAccount)
+
           if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
             let res = await sqlQuery(`SELECT * FROM Account `);
             let result = await sqlQuery(`SELECT * FROM Cabinet `);

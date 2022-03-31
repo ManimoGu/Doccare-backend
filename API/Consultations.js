@@ -15,8 +15,7 @@ exports.DashList = async (req, resp) => {
    resp.status(201).json({
      listCons: List
    });
-   console.log(List
-    )
+   
   } catch (err) {
     console.log(err.message);
   }
@@ -25,7 +24,7 @@ exports.DashList = async (req, resp) => {
 exports.ConsultationList = async (req, resp) => {
 
   let Cab = req.params.id;
-  console.log(Cab)
+ 
 
   try {
 
@@ -37,8 +36,8 @@ exports.ConsultationList = async (req, resp) => {
    resp.status(201).json({
       AllCons: List
    });
-   console.log(List
-    )
+
+ 
   } catch (err) {
     console.log(err.message);
   }
@@ -49,7 +48,9 @@ exports.ConsultationList = async (req, resp) => {
 };
 
 exports.ConsultationNbr = async (req, resp) => {
-  let Cab = req.params.Id;
+  let Cab = req.params.id;
+  console.log(Cab)
+
 
   try {
     let ConsList = await sqlQuery(
