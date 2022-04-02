@@ -1,7 +1,9 @@
+
+
 class Patient{
 
 
-    constructor(Nom='', prénom='', Civilité='', CIN='', Date_naissance , Tel ='', email='', Cabinet, Account){
+    constructor(Nom='', prénom='', Civilité='', CIN='', Date_naissance , Tel ='', Situation_familiale = '', Adresse ='', Email='', Mutuelle = '', Avatar = '', Account){
 
         this.Nom  = Nom ;
         this.prénom = prénom;

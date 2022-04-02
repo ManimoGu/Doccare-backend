@@ -1,9 +1,9 @@
 
 
-class NewPatient{
+class fiche_medical{
 
 
-    constructor(Poids, Taille, Maladie_chronique='', Groupe_sanguin='', Maladie_infectueuse = '' , Allergie ='', Habitude_toxique = '', Chirurgie_antérieure ='', Autre_antécédants ='', Maladie_héréditaire = '', Patient){
+    constructor(Poids, Taille, Maladie_chronique='', Groupe_sanguin='', Maladie_infectueuse = '' , Allergie ='', Habitude_toxique = '', Chirurgie_antérieure ='', Maladie_héréditaire = '', Autre_antécédants ='',  Patient){
 
         this.Poids  =  	Poids;
         this.Taille  = Taille ;
@@ -23,4 +23,4 @@ class NewPatient{
 
 }
 
-exports.NewPatient = NewPatient;
+exports.fiche_medical = fiche_medical;
