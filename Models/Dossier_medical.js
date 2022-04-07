@@ -2,7 +2,7 @@
 class dossier_medical{
 
 
-    constructor(Date_creation , Maladie_traitée = '', Patient, Cabinet){
+    constructor(Date_creation , Maladie_traitée = '', Patient = null, Cabinet= null){
 
         this.Date_creation = Date_creation,
         this.Maladie_traitée = Maladie_traitée,

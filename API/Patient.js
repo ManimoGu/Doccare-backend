@@ -4,28 +4,29 @@ const { Patient } = require("../Models/Patient");
 const { fiche_medical } = require("../Models/Fiche_Medical");
 const { Account } = require("../models/Account");
 const { dossier_medical } = require("../Models/Dossier_medical");
-
+const bcrypt = require("bcrypt");
+const { Email } = require("../Models/Email");
 
 exports.PatientDash = async (req, resp) => {};
 
 exports.PatientList = async (req, resp) => {
-
   let Cab = req.params.id;
 
   try {
-    let res = await sqlQuery(`SELECT * FROM Patient JOIN fiche_medical ON Patient.Id = fiche_medical.Id JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE Cabinet = '${Cab}'`);
-    console.log(res)
+    let res = await sqlQuery(
+      `SELECT * FROM Patient JOIN fiche_medical ON Patient.Id = fiche_medical.Patient JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE Cabinet = '${Cab}'`
+    );
+   
     resp.status(201).json({
-      ListPatient: res
+      ListPatient: res,
     });
-    
   } catch (err) {
     console.log(err.message);
   }
 };
 
 exports.PatientNbr = async (req, resp) => {
-  let Cab = req.params.Id;
+  let Cab = req.params.id;
 
   try {
     let res = await sqlQuery(
@@ -44,8 +45,9 @@ exports.AddPatient = async (req, resp) => {
 
   let Cab = req.params.id;
 
-  const newPatient = new Patient(
 
+
+  const newPatient = new Patient(
     req.body.Nom,
     req.body.prénom,
     req.body.Civilité,
@@ -57,11 +59,11 @@ exports.AddPatient = async (req, resp) => {
     req.body.Email,
     req.body.Mutuelle,
     req.body.Avatar
-    
-  )
+  );
 
-   const newFicheMedical = new fiche_medical(
 
+
+  const newFicheMedical = new fiche_medical(
     req.body.Poids,
     req.body.Taille,
     req.body.Maladie_chronique,
@@ -71,29 +73,23 @@ exports.AddPatient = async (req, resp) => {
     req.body.Habitude_toxique,
     req.body.Chirurgie_antérieure,
     req.body.Maladie_héréditaire,
-    req.body.Autre_antécédants,
+    req.body.Autre_antécédants
+  );
 
-   )
 
-   const NewDossierMedical = new dossier_medical(
+  const NewDossierMedical = new dossier_medical(new Date(Date.now()), "");
+ 
 
-    new Date(Date.now()),
-    ''
-   )
-  
-   const newAccount = new Account(
-   
-    req.body.login, req.body.password, "Patient"
+  const newAccount = new Account( req.body.CIN, req.body.password, "Patient");
 
-   )
 
-   try{
+  try {
 
     let res = await sqlQuery(
       `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
     );
 
-    console.log(res);
+   
 
     if (res.length !== 0) {
       if (res[0].ISVERIFIED) {
@@ -105,14 +101,18 @@ exports.AddPatient = async (req, resp) => {
         });
       }
     } else {
+
       let res = await sqlQuery(
         `SELECT *  FROM Patient  WHERE Email = '${newPatient.Email}'`
       );
 
+    
+
       if (res.length !== 0) {
         resp
           .status(201)
-          .json({ message: "Cet email est déja associé à un autre cabinet" });
+          .json({ message: "Cet email est déja associé à un autre patient" });
+          
       } else {
         newAccount.isverified = false;
         newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -120,9 +120,13 @@ exports.AddPatient = async (req, resp) => {
           length: 4,
           charset: "numeric",
         });
-
+    
+  
+     
+      
         //create de endpoint of the api
         let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
+     
 
         //send the mail
 
@@ -141,10 +145,11 @@ exports.AddPatient = async (req, resp) => {
         //insert user
 
         let result = await bcrypt.hash(newAccount.password, 10);
+        console.log(result)
         newAccount.password = result;
 
-        console.log(newAccount);
-
+       
+       
         let query = `INSERT INTO Account Set ?`;
         let query1 = `INSERT INTO Patient Set ?`;
         let query2 = `INSERT INTO fiche_medical Set ?`;
@@ -153,31 +158,24 @@ exports.AddPatient = async (req, resp) => {
         if (sqlQuery(query, newAccount)) {
           let res = await sqlQuery(`SELECT * FROM Account `);
           newPatient.Account = res[res.length - 1].Id;
-        
+
           if (sqlQuery(query1, newPatient)) {
             let result = await sqlQuery(`SELECT * FROM Patient`);
-            NewDossierMedical.Patient = result[result.length - 1].Id
-           
+            NewDossierMedical.Patient = result[result.length - 1].Id;
+            NewDossierMedical.Cabinet = Cab;
+            newFicheMedical.Patient = result[result.length - 1].Id;
+
+            if (
+              sqlQuery(query2, newFicheMedical) &&
+              sqlQuery(query3, NewDossierMedical)
+            ) {
+              SendEmail(userInfo);
+            }
           }
-
-          SendEmail(userInfo);
-
-          newDoctor.Account = res[res.length - 1].Id;
-
-          let result = await sqlQuery(`SELECT * FROM Cabinet `);
-
-          console.log(newDoctor);
         }
       }
     }
-
-
-   }catch{err => console.log(err.message)}
-
-
-
-
-
- 
-
-}
+  } catch {
+    (err) => console.log(err.message);
+  }
+};

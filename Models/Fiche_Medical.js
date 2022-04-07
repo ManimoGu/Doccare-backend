@@ -3,7 +3,7 @@
 class fiche_medical{
 
 
-    constructor(Poids, Taille, Maladie_chronique='', Groupe_sanguin='', Maladie_infectueuse = '' , Allergie ='', Habitude_toxique = '', Chirurgie_antérieure ='', Maladie_héréditaire = '', Autre_antécédants ='',  Patient){
+    constructor(Poids= 0, Taille= 0, Maladie_chronique='', Groupe_sanguin='', Maladie_infectueuse = '' , Allergie ='', Habitude_toxique = '', Chirurgie_antérieure ='', Maladie_héréditaire = '', Autre_antécédants ='',  Patient = null){
 
         this.Poids  =  	Poids;
         this.Taille  = Taille ;
