@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
 
 exports.register = async (req, resp) => {
+  
   console.log(req.body);
 
   //fetch data
@@ -58,7 +59,6 @@ exports.register = async (req, resp) => {
           resp
             .status(201)
             .json({ message: "Cet email est déja associé à un autre cabinet" });
-
         } else {
           newAccount.isverified = false;
           newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -95,7 +95,7 @@ exports.register = async (req, resp) => {
           let query1 = `INSERT INTO Cabinet Set ?`;
           let query2 = `INSERT INTO Docteur Set ?`;
 
-          let res = await sqlQuery(query, newAccount)
+          let res = await sqlQuery(query, newAccount);
 
           if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
             let res = await sqlQuery(`SELECT * FROM Account `);
@@ -224,7 +224,7 @@ exports.Signin = async (Req, Resp) => {
   if (res.length === 0) {
     Resp.status(201).json({ message: "Nom d'utilisqteur invalide" });
   } else {
-    console.log("hello")
+    console.log("hello");
     bcrypt.compare(pass, res[0].Password, (err, result) => {
       if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
       else {
@@ -232,7 +232,6 @@ exports.Signin = async (Req, Resp) => {
       }
     });
   }
- 
 };
 
 exports.forgot = async (Req, Resp) => {

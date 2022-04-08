@@ -16,7 +16,7 @@ exports.PatientList = async (req, resp) => {
     let res = await sqlQuery(
       `SELECT * FROM Patient JOIN fiche_medical ON Patient.Id = fiche_medical.Patient JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE Cabinet = '${Cab}'`
     );
-   
+
     resp.status(201).json({
       ListPatient: res,
     });
@@ -42,10 +42,7 @@ exports.PatientNbr = async (req, resp) => {
 };
 
 exports.AddPatient = async (req, resp) => {
-
   let Cab = req.params.id;
-
-
 
   const newPatient = new Patient(
     req.body.Nom,
@@ -61,8 +58,6 @@ exports.AddPatient = async (req, resp) => {
     req.body.Avatar
   );
 
-
-
   const newFicheMedical = new fiche_medical(
     req.body.Poids,
     req.body.Taille,
@@ -76,20 +71,14 @@ exports.AddPatient = async (req, resp) => {
     req.body.Autre_antécédants
   );
 
-
   const NewDossierMedical = new dossier_medical(new Date(Date.now()), "");
- 
 
-  const newAccount = new Account( req.body.CIN, req.body.password, "Patient");
-
+  const newAccount = new Account(req.body.CIN, req.body.password, "Patient");
 
   try {
-
     let res = await sqlQuery(
       `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
     );
-
-   
 
     if (res.length !== 0) {
       if (res[0].ISVERIFIED) {
@@ -101,18 +90,14 @@ exports.AddPatient = async (req, resp) => {
         });
       }
     } else {
-
       let res = await sqlQuery(
         `SELECT *  FROM Patient  WHERE Email = '${newPatient.Email}'`
       );
-
-    
 
       if (res.length !== 0) {
         resp
           .status(201)
           .json({ message: "Cet email est déja associé à un autre patient" });
-          
       } else {
         newAccount.isverified = false;
         newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
@@ -120,13 +105,9 @@ exports.AddPatient = async (req, resp) => {
           length: 4,
           charset: "numeric",
         });
-    
-  
-     
-      
+
         //create de endpoint of the api
         let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
-     
 
         //send the mail
 
@@ -145,11 +126,9 @@ exports.AddPatient = async (req, resp) => {
         //insert user
 
         let result = await bcrypt.hash(newAccount.password, 10);
-        console.log(result)
+        console.log(result);
         newAccount.password = result;
 
-       
-       
         let query = `INSERT INTO Account Set ?`;
         let query1 = `INSERT INTO Patient Set ?`;
         let query2 = `INSERT INTO fiche_medical Set ?`;
@@ -179,3 +158,67 @@ exports.AddPatient = async (req, resp) => {
     (err) => console.log(err.message);
   }
 };
+
+exports.UpdatePatient = async (req, resp) => {
+
+  let pat = req.params.id;
+
+  console.log(pat)
+ 
+  try{
+
+  const newPatient = new Patient(
+    req.body.Nom,
+    req.body.prénom,
+    req.body.Civilité,
+    req.body.CIN,
+    req.body.Date_naissance,
+    req.body.Tel,
+    req.body.Situation_familiale,
+    req.body.Adresse,
+    req.body.Email,
+    req.body.Mutuelle,
+    req.body.Avatar
+  );
+
+  let res = await sqlQuery(`SELECT Account FROM Patient Where id = '${pat}'`);
+  console.log(res)
+  newPatient.Account = res[0].Account;
+
+  const newFicheMedical = new fiche_medical(
+    req.body.Poids,
+    req.body.Taille,
+    req.body.Maladie_chronique,
+    req.body.Groupe_sanguin,
+    req.body.Maladie_infectueuse,
+    req.body.Allergie,
+    req.body.Habitude_toxique,
+    req.body.Chirurgie_antérieure,
+    req.body.Maladie_héréditaire,
+    req.body.Autre_antécédants,
+    pat
+
+  );
+
+
+  let query = `UPDATE  Patient Set ? WHERE id = '${pat}'`;
+  let query1 = `UPDATE fiche_medical Set ? WHERE Patient = '${pat}'`;
+  
+  if(sqlQuery(query,newPatient) && sqlQuery(query1, newFicheMedical)){
+
+
+    resp
+    .status(201)
+    .json({ message: "Update Success" });
+
+  }
+
+}catch{(err) => console.log(err.message)}
+  
+
+};
+
+exports.DeletePatient = async (req, resp) => {
+
+
+}
