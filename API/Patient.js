@@ -14,8 +14,13 @@ exports.PatientList = async (req, resp) => {
 
   try {
     let res = await sqlQuery(
-      `SELECT * FROM Patient JOIN fiche_medical ON Patient.Id = fiche_medical.Patient JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE Cabinet = '${Cab}'`
+      `SELECT 
+      Patient.Id as IdPatient, Nom, Prénom, Civilité, CIN, Date_naissance, Tel, Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account,
+      Fiche_medical.Id as Fiche, Poids, Taille, Maladie_chronique, Groupe_sanguin, Maladie_infectueuse, Allergie, Habitude_toxique, Chirurgie_antérieure, Maladie_héréditaire, Autre_antécédants,
+      dossier_medical.Id as dossier, Date_creation, Maladie_traitée, Cabinet
+       FROM Patient  JOIN fiche_medical ON Patient.Id = fiche_medical.Patient JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE dossier_medical.Cabinet = '${Cab}'`
     );
+    console.log(res)
 
     resp.status(201).json({
       ListPatient: res,
@@ -126,7 +131,6 @@ exports.AddPatient = async (req, resp) => {
         //insert user
 
         let result = await bcrypt.hash(newAccount.password, 10);
-        console.log(result);
         newAccount.password = result;
 
         let query = `INSERT INTO Account Set ?`;
@@ -219,6 +223,35 @@ exports.UpdatePatient = async (req, resp) => {
 };
 
 exports.DeletePatient = async (req, resp) => {
+
+
+  let pat = req.params.id;
+
+  try{
+
+  let res = await sqlQuery(`SELECT * FROM rdv JOIN consultation ON rdv.id = consultation.RDV WHERE rdv.Patient = '${pat}'`);
+
+  if(res.length !==0 ){
+   
+    resp
+    .status(201)
+    .json({ message: "Ce patient a deja un dossier medical remplie vous ne pouvez pas le supprimer" });
+
+  }else {
+
+    if(
+     sqlQuery(`DELETE FROM Patient WHERE Id = '${pat}'`)
+    )
+
+    resp
+    .status(201)
+    .json({ message: "Ce patient a deja un dossier medical remplie vous ne pouvez pas le supprimer" });
+
+    
+
+  }
+
+}catch{(err) => console.log(err.message)}
 
 
 }
