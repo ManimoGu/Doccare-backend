@@ -8,7 +8,7 @@ exports.DashList = async (req, resp) => {
   try {
 
     let List = await sqlQuery(
-      `SELECT Patient.id,Nom, Prénom, Heure ,Type, Date_naissance as Date, avatar, Civilité FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
+      `SELECT * FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
        
 
@@ -29,7 +29,7 @@ exports.ConsultationList = async (req, resp) => {
   try {
 
     let List = await sqlQuery(
-      `SELECT * FROM Consultation join rdv on consultation.Rdv = rdv.id WHERE Cabinet = '${Cab}'`
+      `SELECT * FROM Consultation join rdv on consultation.Rdv = rdv.id join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
        
 
@@ -80,3 +80,29 @@ exports.ConsultationTotal = async (req, resp) => {
     console.log(err.message);
   }
 };
+
+exports.UpdateConsultation = async (req, resp) => {
+
+
+
+console.log(req.body)
+ 
+  try{
+
+  let query1 = `UPDATE consultation Set Description = '${req.body.Description}', Motif = '${req.body.Motif}', Montant = '${req.body.Montant}' WHERE id = '${req.body.Id}'`;
+  
+  if( sqlQuery(query1)){
+
+
+    resp
+    .status(201)
+    .json({ message: "Update Success" });
+
+  }
+
+}catch{(err) => console.log(err.message)}
+  
+
+};
+
+

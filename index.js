@@ -10,7 +10,7 @@ const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = requ
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
 const { ReviewsNbr } = require("./API/Reviews");
-const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList } = require("./API/Consultations");
+const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 
 //create an app 
 
@@ -89,5 +89,7 @@ app.listen("9000", (req, resp) => {
 app.get("/api/Doctor/NombreConsultation/id/:id", ConsultationNbr);
 app.get("/api/Doctor/TotalConsultation/id/:id", ConsultationTotal);
 app.get("/api/Doctor/ListConsultation/id/:id", ConsultationList);
+app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
+
 
 

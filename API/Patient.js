@@ -247,8 +247,6 @@ exports.DeletePatient = async (req, resp) => {
     .status(201)
     .json({ message: "Ce patient a deja un dossier medical remplie vous ne pouvez pas le supprimer" });
 
-    
-
   }
 
 }catch{(err) => console.log(err.message)}
