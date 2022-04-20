@@ -7,7 +7,10 @@ const { dossier_medical } = require("../Models/Dossier_medical");
 const bcrypt = require("bcrypt");
 const { Email } = require("../Models/Email");
 
-exports.PatientDash = async (req, resp) => {};
+exports.PatientDash = async (req, resp) => {
+
+  
+};
 
 exports.PatientList = async (req, resp) => {
   let Cab = req.params.id;

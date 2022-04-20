@@ -29,7 +29,7 @@ exports.ConsultationList = async (req, resp) => {
   try {
 
     let List = await sqlQuery(
-      `SELECT * FROM Consultation join rdv on consultation.Rdv = rdv.id join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
+      `SELECT * FROM Consultation   JOIN  rdv on consultation.Rdv = rdv.id  join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
        
 

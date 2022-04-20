@@ -11,6 +11,7 @@ const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = re
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
 const { ReviewsNbr } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
+const { ADDRDV, RDVList, DeleteRDV, UpdateRDV } = require("./API/RDV");
 
 //create an app 
 
@@ -91,5 +92,12 @@ app.get("/api/Doctor/TotalConsultation/id/:id", ConsultationTotal);
 app.get("/api/Doctor/ListConsultation/id/:id", ConsultationList);
 app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
 
+
+  // RVD API 
+
+  app.put("/api/DoctorAssistante/AddRDV/id/:id", ADDRDV);
+  app.get("/api/DoctorAssistante/ListRDV/id/:id", RDVList);
+  app.delete("/api/DoctorAssistante/DeleteRDV/id/:id", DeleteRDV);
+  app.put("/api/DoctorAssistante/UpdateRDV/id/:id", UpdateRDV);
 
 
