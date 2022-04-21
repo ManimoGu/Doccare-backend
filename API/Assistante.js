@@ -3,14 +3,17 @@ const randomstring = require("randomstring");
 const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
-
+const { Assistante } = require("../models/Assistante");
+const { Email } = require("../models/Email");
+const bcrypt = require("bcrypt");
 
 exports.AssistanteList = async (req, resp) => {
-
-  let Cab = req.params.id
+  let Cab = req.params.id;
 
   try {
-    let res = await sqlQuery(`SELECT * FROM assistante Where Cabinet = '${Cab}'`);
+    let res = await sqlQuery(
+      `SELECT * FROM assistante Where Cabinet = '${Cab}'`
+    );
 
     resp.status(201).json({
       ListAssistante: res,
@@ -23,92 +26,92 @@ exports.AssistanteList = async (req, resp) => {
 exports.AddAssistante = async (req, resp) => {
   let Cab = req.params.cabinet;
 
+  console.log(req.body);
+
   let newAssistance = new Assistante(
-    req.body.nom,
-    req.body.prenom,
-    req.body.CIN,
-    req.body.tel,
-    req.body.adresse,
+    req.body.Nom[0],
+    req.body.Prénom[0],
+    req.body.Date_naissance[0],
+    req.body.CIN[0],
+    req.body.Tel[0],
+    req.body.Adresse[0],
+    req.body.Avatar[0],
+    new Date(Date.now()),
     Cab
   );
 
-  let newAccount = new Account(req.body.login, req.body.password, "Assistante");
+  let newAccount = new Account(req.body.CIN, req.body.Password, "Assistante");
 
-  if (validationRegister(newDoctor, newAccount, newCabinet))
+  /*if (validationRegister(newDoctor, newAccount, newCabinet))
     resp
       .status(403)
-      .json({ message: validationRegister(newDoctor, newAccount, newCabinet) });
-  else {
-    try {
-      let res = await sqlQuery(
-        `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
+      .json({ message: validationRegister(newAccount, newAssistance) });
+  else {*/
+  try {
+    let res = await sqlQuery(
+      `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
+    );
+
+    console.log(res);
+
+    if (res.length !== 0) {
+      if (res[0].ISVERIFIED) {
+        resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
+      } else if (!res[0].ISVERIFIED) {
+        resp.status(201).json({
+          message:
+            "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
+        });
+      }
+    } else {
+      newAccount.isverified = false;
+      newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      newAccount.token = randomstring.generate({
+        length: 4,
+        charset: "numeric",
+      });
+
+      //create de endpoint of the api
+      let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
+
+      let Mail = await sqlQuery(
+        `SELECT Email  FROM cabinet WHERE Id = '${Cab}'`
       );
 
-      console.log(res);
+      //send the mail
 
-      if (res.length !== 0) {
-        if (res[0].ISVERIFIED) {
-          resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
-        } else if (!res[0].ISVERIFIED) {
-          resp.status(201).json({
-            message:
-              "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
-          });
-        }
-      } else {
-        newAccount.isverified = false;
-        newAccount.expirationDat = new Date(Date.now() + 24 * 60 * 60 * 1000);
-        newAccount.token = randomstring.generate({
-          length: 4,
-          charset: "numeric",
-        });
-
-        //create de endpoint of the api
-        let endpoint = `http://localhost:9000/api/verify-email/${newAccount.login}/code/${newAccount.token}`;
-
-        let Mail = await sqlQuery(
-          `SELECT Email  FROM cabinet WHERE Id = '${Cab}'`
-        );
-
-        //send the mail
-
-        let userInfo = new Email(
-          "imane@support.com",
-          Mail[0].Email,
-          "email verification ✔",
-          `<h1>thanks for your registration</h1>
+      let userInfo = new Email(
+        "imane@support.com",
+        Mail[0].Email,
+        "email verification ✔",
+        `<h1>thanks for your registration</h1>
                   Click the link below to verify your email
                   <a href=${endpoint}>Verify</a>
                   the link will be expired after 24 hours 
                   `,
-          endpoint
-        );
+        endpoint
+      );
 
-        //insert user
+      //insert user
 
-        let result = await bcrypt.hash(newAccount.password, 10);
-        newAccount.password = result;
+      let result = await bcrypt.hash(newAccount.password, 10);
+      newAccount.password = result;
 
-        console.log(newAccount);
+      let query = `INSERT INTO Account Set ?`;
+      let query2 = `INSERT INTO Assistante Set ?`;
 
-        let query = `INSERT INTO Account Set ?`;
-        let query2 = `INSERT INTO Assistante Set ?`;
+      if (sqlQuery(query, newAccount)) {
+        let res = await sqlQuery(`SELECT * FROM Account `);
 
-        if (sqlQuery(query, newAccount)) {
-          let res = await sqlQuery(`SELECT * FROM Account `);
+        newAssistance.Account = res[res.length - 1].Id;
 
-          newAssistance.Account = res[res.length - 1].Id;
-
-          if (sqlQuery(query2, newAssistance)) {
-            SendEmail(userInfo);
-          }
-
-          console.log(newAssistance);
+        if (sqlQuery(query2, newAssistance)) {
+          SendEmail(userInfo);
         }
       }
-    } catch (err) {
-      console.log(err.message);
     }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
@@ -133,27 +136,29 @@ exports.DeleteAssistante = async (req, resp) => {
 };
 
 exports.UpdateAssistante = async (req, resp) => {
-
   let IdAssistante = req.params.id;
 
   let newAssistance = new Assistante(
-    req.body.nom,
-    req.body.prenom,
+    req.body.Nom,
+    req.body.Prénom,
+    req.body.Date_naissance,
     req.body.CIN,
-    req.body.tel,
-    req.body.adresse
+    req.body.Tel,
+    req.body.Adresse,
+    req.body.Avatar,
+    req.body.Entree_le,
+    req.body.Cabinet,
+    req.body.Account
+
   );
 
   try {
-    if (
-       sqlQuery(
-        `UPDATE docteur SET Nom = '${newAssistance.nom}', Prénom = '${newAssistance.prénom}', CIN =' ${newAssistance.CIN}', Tel = '${newAssistance.tel}', Adresse = '${newAssistance.adresse}' WHERE Id ='${IdAssistante}'`
-      )
-    ) {
+    let query = `UPDATE  Assistante Set ? WHERE id = '${IdAssistante}'`;
 
-        resp
-          .status(201)
-          .json({ message: "Les informations ont été modifier avec succés" });
+    if (sqlQuery(query, newAssistance)) {
+      resp
+        .status(201)
+        .json({ message: "Les informations ont été modifier avec succés" });
     }
   } catch (err) {
     console.log(err.message);

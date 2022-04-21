@@ -93,3 +93,21 @@ exports.UpdateRDV = async (req, resp) => {
     (err) => console.log(err.message);
   }
 };
+
+exports.RDVNbr = async (req, resp) => {
+  let Cab = req.params.id;
+  console.log(Cab)
+
+
+  try {
+    let ConsList = await sqlQuery(
+      `SELECT COUNT(*) as nbr FROM rdv WHERE rdv.Cabinet = '${Cab}' `
+    );
+
+    resp.status(201).json({
+      NbrRDV: ConsList[0].nbr,
+    });
+  } catch (err) {
+    console.log(err.message);
+  }
+};

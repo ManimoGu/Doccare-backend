@@ -1,16 +1,22 @@
 class Assistante {
 
-    constructor(nom='', prénom='', CIN='', tel='', adresse='', Cabinet, Account){
+    constructor(Nom='', Prénom='', Date_naissance,  CIN='', Tel='', Adresse='', Avatar = '', Entree_le ,Cabinet, Account){
 
-        this.nom = nom;
-        this.prénom = prénom;
+        this.Nom = Nom;
+        this.Prénom = Prénom;
+        this.Date_naissance = Date_naissance;
         this.CIN = CIN;
-        this.tel = tel;
-        this.adresse = adresse;
+        this.Tel = Tel;
+        this.Adresse = Adresse;
+        this.Avatar = Avatar;
+        this.Entree_le = Entree_le;
         this.Cabinet = Cabinet;
         this.Account = Account;
+       
 
 
     }
 
 }
+
+exports.Assistante = Assistante 

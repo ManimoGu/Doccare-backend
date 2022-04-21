@@ -176,7 +176,7 @@ exports.UpdatePatient = async (req, resp) => {
 
   const newPatient = new Patient(
     req.body.Nom,
-    req.body.prénom,
+    req.body.Prénom,
     req.body.Civilité,
     req.body.CIN,
     req.body.Date_naissance,
