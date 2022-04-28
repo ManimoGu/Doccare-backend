@@ -9,7 +9,7 @@ const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
-const { ReviewsNbr } = require("./API/Reviews");
+const { ReviewsNbr, ListMessage, AddResp } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr } = require("./API/RDV");
 
@@ -82,6 +82,8 @@ app.listen("9000", (req, resp) => {
   // Feedback API
 
   app.get("/api/Doctor/NombredAvis/id/:id", ReviewsNbr);
+  app.get("/api/Doctor/ListMessage/id/:id", ListMessage);
+  app.get("/api/Doctor/AddResponse/id/:id", AddResp);
 
 
   // Consultation API 
