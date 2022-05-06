@@ -229,6 +229,7 @@ exports.DeletePatient = async (req, resp) => {
 
 
   let pat = req.params.id;
+  let Account = req.params.Account
 
   try{
 
@@ -243,12 +244,12 @@ exports.DeletePatient = async (req, resp) => {
   }else {
 
     if(
-     sqlQuery(`DELETE FROM Patient WHERE Id = '${pat}'`)
+     sqlQuery(`DELETE FROM account WHERE Id = '${Account}'`)
     )
 
     resp
     .status(201)
-    .json({ message: "Ce patient a deja un dossier medical remplie vous ne pouvez pas le supprimer" });
+    .json({ message: "Ce patient a été supprimé" });
 
   }
 

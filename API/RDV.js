@@ -115,10 +115,11 @@ exports.RDVNbr = async (req, resp) => {
 exports.TypeUpdate = async (req, resp) => {
 
   let RDV = req.params.id
+  
 
   try{
 
-    if(sqlQuery( `UPDATE rdv SET  Type = 'Traité' WHERE Id = '${RDV}' `))
+    if(sqlQuery( `UPDATE rdv SET  Etat = 'Traité' WHERE Id = '${RDV}'`))
     resp.status(201).json({ message: "Update Success" });
 
 

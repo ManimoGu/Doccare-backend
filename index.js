@@ -11,7 +11,7 @@ const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = re
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
 const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
-const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr } = require("./API/RDV");
+const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
 
 //create an app 
 
@@ -75,7 +75,7 @@ app.listen("9000", (req, resp) => {
   app.get("/api/Doctor/PatientsList/id/:id", PatientList);
   app.post("/api/Doctor/AddPatient/id/:id", AddPatient);
   app.put("/api/Doctor/UpdatePatient/id/:id", UpdatePatient);
-  app.put("/api/Doctor/DeletePatient/id/:id", DeletePatient);
+  app.put("/api/Doctor/DeletePatient/id/:id/:Account", DeletePatient);
 
 
 
@@ -103,6 +103,7 @@ app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
   app.delete("/api/DoctorAssistante/DeleteRDV/id/:id", DeleteRDV);
   app.put("/api/DoctorAssistante/UpdateRDV/id/:id", UpdateRDV);
   app.get("/api/DoctorAssistante/NBRRDV/id/:id", RDVNbr);
+  app.get("/api/DoctorAssistante/UpdateType/id/:id", TypeUpdate);
 
 
 
