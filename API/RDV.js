@@ -1,5 +1,7 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const { RDV } = require("../Models/RDV");
+const { Consultation } = require("../Models/Consultation");
+const { FicheConsultation } = require("../Models/FicheConsultation");
 
 exports.ADDRDV = async (req, resp) => {
   let Cab = req.params.id;
@@ -75,13 +77,9 @@ exports.DeleteRDV = async (req, resp) => {
 };
 
 exports.UpdateRDV = async (req, resp) => {
-
   let RDV = req.params.id;
- 
 
   let Date = req.body.Date[0].split("T");
-
-
 
   try {
     let query1 = `UPDATE rdv Set Date = '${Date[0]}', Heure = '${Date[1]}', Type = '${req.body.Type}' WHERE id = '${RDV}'`;
@@ -96,8 +94,7 @@ exports.UpdateRDV = async (req, resp) => {
 
 exports.RDVNbr = async (req, resp) => {
   let Cab = req.params.id;
-  console.log(Cab)
-
+  console.log(Cab);
 
   try {
     let ConsList = await sqlQuery(
@@ -113,16 +110,36 @@ exports.RDVNbr = async (req, resp) => {
 };
 
 exports.TypeUpdate = async (req, resp) => {
+  let RDV = req.params.id;
 
-  let RDV = req.params.id
-  
+  try {
+    if (sqlQuery(`UPDATE rdv SET  Etat = 'Traité' WHERE Id = '${RDV}'`))
+      resp.status(201).json({ message: "Update Success" });
 
-  try{
+    let newconsultation = new Consultation("", "", 0, "", RDV);
 
-    if(sqlQuery( `UPDATE rdv SET  Etat = 'Traité' WHERE Id = '${RDV}'`))
-    resp.status(201).json({ message: "Update Success" });
+    let newFichConsultation = new FicheConsultation(
+      "",
+      "",
+      "",
+      "",
+      "",
+      Date.now(),
+      0,
+      0
+    );
 
+    let query = `INSERT INTO consultation Set ?`;
+    let query1 = `INSERT INTO fiche_consultation Set ?`
 
-  }catch(err){console.log(err.message)}
-}
-
+    if (sqlQuery(query, newconsultation)) {
+      let res = sqlQuery(`SELECT * FROM consultation`)
+      newFichConsultation.Consultation = res[res.length - 1].Id
+      if (sqlQuery(query1, newFichConsultation)) {
+        resp.status(201).json({ message: "Traitement validé" });
+      }
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
