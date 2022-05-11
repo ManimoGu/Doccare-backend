@@ -111,32 +111,48 @@ exports.RDVNbr = async (req, resp) => {
 
 exports.TypeUpdate = async (req, resp) => {
   let RDV = req.params.id;
+  let Patient = req.params.Patient;
 
   try {
-    if (sqlQuery(`UPDATE rdv SET  Etat = 'Traité' WHERE Id = '${RDV}'`))
-      resp.status(201).json({ message: "Update Success" });
-
-    let newconsultation = new Consultation("", "", 0, "", RDV);
-
-    let newFichConsultation = new FicheConsultation(
-      "",
-      "",
-      "",
-      "",
-      "",
-      Date.now(),
-      0,
-      0
+    let consult = await sqlQuery(
+      `SELECT * FROM consultation WHERE RDV = '${RDV}'`
     );
+    console.log(consult);
+    if (consult.length !== 0) {
+      resp.status(201).json({
+        message: "Il y a deja une consultation qui correspond a ce rendez-vous",
+      });
+    } else {
+      let result = await sqlQuery(
+        `UPDATE rdv SET  Etat = 'Traité' WHERE Id = '${RDV}'`
+      );
 
-    let query = `INSERT INTO consultation Set ?`;
-    let query1 = `INSERT INTO fiche_consultation Set ?`
+      let newconsultation = new Consultation("", "", 0, "", RDV);
 
-    if (sqlQuery(query, newconsultation)) {
-      let res = sqlQuery(`SELECT * FROM consultation`)
-      newFichConsultation.Consultation = res[res.length - 1].Id
-      if (sqlQuery(query1, newFichConsultation)) {
-        resp.status(201).json({ message: "Traitement validé" });
+      let newFichConsultation = new FicheConsultation(
+        "",
+        "",
+        "",
+        "",
+        "",
+        new Date(Date.now())
+      );
+
+      let query = `INSERT INTO consultation Set ?`;
+      let query1 = `INSERT INTO fiche_consultation Set ?`;
+
+      if (sqlQuery(query, newconsultation)) {
+        let res = await sqlQuery(`SELECT * FROM consultation`);
+
+        let dossier = await sqlQuery(
+          `SELECT Id FROM dossier_medical WHERE Patient = '${Patient}'`
+        );
+
+        newFichConsultation.Consultation = res[res.length - 1].Id;
+        newFichConsultation.Dossier_medical = dossier[0].Id;
+        if (sqlQuery(query1, newFichConsultation)) {
+          resp.status(201).json({ message: "Traitement validé" });
+        }
       }
     }
   } catch (err) {

@@ -1,14 +1,15 @@
 class FicheConsultation {
 
-    constructor(Observation='', Ordonnance='', Certificat='', Analyse='', Autre='', Date_création= new Date(), id = null ){
+    constructor(Observation='', Ordonnance='', Certificat='', Analyse='', Autre='', Date_création= new Date(), Dossier_medical, Consultation ){
 
-        this.login = login;
-        this.password = password;
-        this.fonction = fonction;
-        this.token = token;
-        this.isverified = isverified;
-        this.expirationDat = expirationDat; 
-        this.id = id;      
+         this.Observation = Observation;
+         this.Ordonnance = Ordonnance;
+         this.Certificat = Certificat;
+         this.Analyse = Analyse;
+         this.Autre = Autre;
+         this.Date_création = Date_création;
+         this.Dossier_medical = Dossier_medical;
+         this.Consultation = Consultation;
     
     }
 }

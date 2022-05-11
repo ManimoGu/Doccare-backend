@@ -103,7 +103,7 @@ app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
   app.delete("/api/DoctorAssistante/DeleteRDV/id/:id", DeleteRDV);
   app.put("/api/DoctorAssistante/UpdateRDV/id/:id", UpdateRDV);
   app.get("/api/DoctorAssistante/NBRRDV/id/:id", RDVNbr);
-  app.get("/api/DoctorAssistante/UpdateType/id/:id", TypeUpdate);
+  app.get("/api/DoctorAssistante/UpdateType/id/:id/Patient/:Patient", TypeUpdate);
 
 
 
