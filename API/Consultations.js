@@ -89,7 +89,7 @@ console.log(req.body)
  
   try{
 
-  let query1 = `UPDATE consultation Set Description = '${req.body.Description}', Motif = '${req.body.Motif}', Montant = '${req.body.Montant}' WHERE id = '${req.body.Id}'`;
+  let query1 = `UPDATE consultation Set Description = '${req.body.Description}', Motif = '${req.body.Motif}', Montant = '${req.body.Montant}',Status = '${req.body.Status}'  WHERE RDV = '${req.body.Id}'`;
   
   if( sqlQuery(query1)){
 
