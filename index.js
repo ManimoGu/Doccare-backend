@@ -37,7 +37,7 @@ app.listen("9000", (req, resp) => {
 
   app.get("/api/verify-email/:login/code/:token", verify);
 
-  app.post("/api/Signin/:login/pass/:password", DoctorProfil);
+  app.get("/api/Signin/:login/pass/:password", DoctorProfil);
 
   app.get("/api/resend/:login/code/:token", resend);
 

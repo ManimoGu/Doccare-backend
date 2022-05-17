@@ -31,7 +31,6 @@ exports.DoctorProfil = async (req, Resp) => {
         if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
           Resp.status(201).json({ message: "Compte introuvable" });
         else {
-          console.log("hello");
           Resp.status(201).json({
             infos: {
               Doctor: DoctorInfo,
