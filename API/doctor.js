@@ -18,26 +18,44 @@ exports.DoctorProfil = async (req, Resp) => {
       });
     } else {
       let result = await bcrypt.compare(pass, res[0].Password);
+
       if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
       else {
-        let DoctorInfo = await sqlQuery(
-          `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
-        );
+        if (res[0].Fonction === "Docteur") {
+          let DoctorInfo = await sqlQuery(
+            `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
+          );
 
-        let CabinetInfo = await sqlQuery(
-          `SELECT * FROM cabinet WHERE  Id ='${DoctorInfo[0].Cabinet}' `
-        );
+          let CabinetInfo = await sqlQuery(
+            `SELECT * FROM cabinet WHERE  Id ='${DoctorInfo[0].Cabinet}' `
+          );
 
-        if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
-          Resp.status(201).json({ message: "Compte introuvable" });
-        else {
-          Resp.status(201).json({
-            infos: {
-              Doctor: DoctorInfo,
-              AccountInfo: res,
-              CabinetInfos: CabinetInfo,
-            },
-          });
+          if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
+            Resp.status(201).json({ message: "Compte introuvable" });
+          else {
+            Resp.status(201).json({
+              infos: {
+                Doctor: DoctorInfo,
+                AccountInfo: res,
+                CabinetInfos: CabinetInfo,
+              },
+            });
+          }
+        } else if (res[0].Fonction === "Assistante") {
+          let AssistanteInfo = await sqlQuery(
+            `SELECT  * FROM  assistante WHERE Account ='${res[0].Id}' `
+          );
+
+          if (AssistanteInfo.length === 0)
+            Resp.status(201).json({ message: "Compte introuvable" });
+          else {
+            Resp.status(201).json({
+              infos: {
+                Assistante: AssistanteInfo,
+                AccountInfo: res,
+              },
+            });
+          }
         }
       }
     }

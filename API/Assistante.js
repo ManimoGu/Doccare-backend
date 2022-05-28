@@ -26,7 +26,7 @@ exports.AssistanteList = async (req, resp) => {
 exports.AddAssistante = async (req, resp) => {
   let Cab = req.params.cabinet;
 
-  console.log(req.body);
+
 
   let newAssistance = new Assistante(
     req.body.Nom[0],
@@ -40,7 +40,8 @@ exports.AddAssistante = async (req, resp) => {
     Cab
   );
 
-  let newAccount = new Account(req.body.CIN, req.body.Password, "Assistante");
+  let newAccount = new Account(req.body.CIN, req.body.password[0], "Assistante");
+
 
   /*if (validationRegister(newDoctor, newAccount, newCabinet))
     resp
@@ -52,7 +53,6 @@ exports.AddAssistante = async (req, resp) => {
       `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
     );
 
-    console.log(res);
 
     if (res.length !== 0) {
       if (res[0].ISVERIFIED) {
