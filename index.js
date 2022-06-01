@@ -53,7 +53,7 @@ app.listen("9000", (req, resp) => {
 
   app.get("/api/Doctor/DeleteDoctor/:Id", DeleteDoctor);
   
-  app.get("/api/Doctor/UpdateDoctor/:Id", UpdateDoctor);
+  app.post("/api/Doctor/UpdateDoctorCabinet", UpdateDoctor);
 
   app.get("/api/Doctor/DoctorList", DoctorList);
 

@@ -35,9 +35,9 @@ exports.DoctorProfil = async (req, Resp) => {
           else {
             Resp.status(201).json({
               infos: {
-                Doctor: DoctorInfo,
-                AccountInfo: res,
-                CabinetInfos: CabinetInfo,
+                Doctor: DoctorInfo[0],
+                AccountInfo: res[0],
+                CabinetInfos: CabinetInfo[0],
               },
             });
           }
@@ -46,13 +46,18 @@ exports.DoctorProfil = async (req, Resp) => {
             `SELECT  * FROM  assistante WHERE Account ='${res[0].Id}' `
           );
 
+          let CabinetInfo = await sqlQuery(
+            `SELECT * FROM cabinet WHERE  Id ='${AssistanteInfo[0].Cabinet}' `
+          );
+
           if (AssistanteInfo.length === 0)
             Resp.status(201).json({ message: "Compte introuvable" });
           else {
             Resp.status(201).json({
               infos: {
-                Assistante: AssistanteInfo,
-                AccountInfo: res,
+                Assistante: AssistanteInfo[0],
+                AccountInfo: res[0],
+                CabinetInfos: CabinetInfo[0],
               },
             });
           }
@@ -174,22 +179,30 @@ exports.DeleteDoctor = async (req, resp) => {
 };
 
 exports.UpdateDoctor = async (req, resp) => {
-  let IdDoctor = req.params.id;
+  
+ 
 
   let newDoctor = new Doctor(
-    req.body.nom,
-    req.body.prenom,
-    req.body.specialite,
-    req.body.CIN,
-    req.body.tel,
-    req.body.email
+    req.body.Doctor_modif.Nom,
+    req.body.Doctor_modif.Prénom,
+    req.body.Doctor_modif.Spécialité,
+    req.body.Doctor_modif.CIN,
+    req.body.Doctor_modif.Tel,
+    req.body.Doctor_modif.Email
   );
+
+ 
 
   try {
     if (
       sqlQuery(
-        `UPDATE docteur SET Nom = '${newDoctor.nom}', Prénom = '${newDoctor.prénom}', Spécialité = '${newDoctor.spécialité}', CIN =' ${newDoctor.CIN}', Tel = '${newDoctor.tel}', Email = '${newDoctor.email}' WHERE Id ='${IdDoctor}'`
+        `UPDATE docteur SET Nom = '${newDoctor.nom}', Prénom = '${newDoctor.prénom}', Spécialité = '${newDoctor.spécialité}', CIN =' ${newDoctor.CIN}', Tel = '${newDoctor.tel}', Email = '${newDoctor.email}' WHERE Id ='${req.body.Doctor_modif.Id}'`
       )
+      &&
+      sqlQuery(
+        `UPDATE cabinet SET Adresse = '${req.body.Cabinet_modif.Adresse}', Email = '${req.body.Cabinet_modif.Email}', Tel = '${req.body.Cabinet_modif.Tel}' WHERE Id ='${req.body.Cabinet_modif.Id}'`
+      )
+
     ) {
       resp
         .status(201)

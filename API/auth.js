@@ -302,7 +302,7 @@ exports.forgot = async (Req, Resp) => {
 
 exports.resetPass = async (Req, Resp) => {
   let login = Req.params.login;
-  let Token = Req.params.token;
+  let Token = Req.params.token ?  Req.params.token : "";
 
   let pass = Req.body;
 
