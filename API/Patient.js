@@ -6,6 +6,7 @@ const { Account } = require("../models/Account");
 const { dossier_medical } = require("../Models/Dossier_medical");
 const bcrypt = require("bcrypt");
 const { Email } = require("../Models/Email");
+const { SendEmail } = require("../Helpers/Sendemail");
 
 exports.PatientDash = async (req, resp) => {};
 

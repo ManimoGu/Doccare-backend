@@ -6,6 +6,7 @@ const { Account } = require("../models/Account");
 const { Assistante } = require("../models/Assistante");
 const { Email } = require("../models/Email");
 const bcrypt = require("bcrypt");
+const { SendEmail } = require("../Helpers/Sendemail");
 
 exports.AssistanteList = async (req, resp) => {
   let Cab = req.params.id;
@@ -137,6 +138,7 @@ exports.DeleteAssistante = async (req, resp) => {
 
 exports.UpdateAssistante = async (req, resp) => {
   let IdAssistante = req.params.id;
+  console.log(IdAssistante)
 
   let newAssistance = new Assistante(
     req.body.Nom,
@@ -151,6 +153,8 @@ exports.UpdateAssistante = async (req, resp) => {
     req.body.Account
 
   );
+
+  console.log(newAssistance)
 
   try {
     let query = `UPDATE  Assistante Set ? WHERE id = '${IdAssistante}'`;

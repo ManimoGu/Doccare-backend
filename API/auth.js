@@ -11,21 +11,22 @@ const { validationRegister } = require("../Helpers/validation");
 
 exports.register = async (req, resp) => {
   
-  console.log(req.body);
+
 
   //fetch data
   let newDoctor = new Doctor(
-    req.body.nom,
-    req.body.prenom,
-    req.body.specialite,
+    req.body.Nom,
+    req.body.Prénom,
+    req.body.Spécialité,
     req.body.CIN,
     "",
-    req.body.email
+    req.body.Email 
   );
 
-  let newCabinet = new Cabinet(req.body.adresse, req.body.Tel, req.body.email);
+  let newCabinet = new Cabinet(req.body.Adresse, req.body.Tel, req.body.Email);
 
-  let newAccount = new Account(req.body.login, req.body.password, "docteur");
+  let newAccount = new Account(req.body.Login, req.body.Password, "docteur");
+
 
   //validation des données
 
@@ -95,7 +96,7 @@ exports.register = async (req, resp) => {
           let query1 = `INSERT INTO Cabinet Set ?`;
           let query2 = `INSERT INTO Docteur Set ?`;
 
-          let res = await sqlQuery(query, newAccount);
+          //let res = await sqlQuery(query, newAccount);
 
           if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
             let res = await sqlQuery(`SELECT * FROM Account `);
@@ -103,9 +104,12 @@ exports.register = async (req, resp) => {
 
             newDoctor.Cabinet = result[result.length - 1].Id;
             newDoctor.Account = res[res.length - 1].Id;
+            console.log(newDoctor)
+
 
             if (sqlQuery(query2, newDoctor)) {
               SendEmail(userInfo);
+              console.log("hello")
             }
 
             console.log(newDoctor);
@@ -114,6 +118,7 @@ exports.register = async (req, resp) => {
       }
     } catch (err) {
       console.log(err.message);
+      resp.send(err.message)
     }
   }
 };
