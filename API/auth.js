@@ -345,3 +345,43 @@ exports.resetPass = async (Req, Resp) => {
     }
   }
 };
+
+exports.reseSettingtPass = async (Req, Resp) => {
+  let login = Req.params.login;
+  let Password = Req.params.password;
+  console.log(login)
+  console.log(Password)
+
+  let PassInfos = Req.body;
+
+  console.log(PassInfos)
+
+  let res = await sqlQuery(
+    `SELECT  Password FROM Account WHERE Login ='${login}' `
+  );
+  
+
+ let result = await bcrypt.compare(Password, res[0].Password)
+
+ 
+
+  if (res.length === 0) {
+    Resp.status(201).json({ message: "Mot de passe invalide" });
+  } else {
+    
+      let result = await bcrypt.hash(PassInfos.password, 10);
+
+      if (
+        sqlQuery(
+          `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
+        )
+      )
+        Resp.send(`
+           
+          <h1> Votre mot de passe a été changer avec succés </h1>
+          <a href= "http://localhost:3000/Login">Connectez vous</a>
+          
+          `);
+    
+  }
+};

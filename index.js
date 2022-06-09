@@ -4,7 +4,7 @@ const express = require("express")
 const cors = require("cors")
 const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
-const { register, verify, Signin, resend, forgot, resetPass} = require("./API/auth");
+const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass} = require("./API/auth");
 const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
@@ -44,6 +44,8 @@ app.listen("9000", (req, resp) => {
   app.post("/api/fogot_password/:login",forgot)
 
   app.post("/api/resetpassword/:login/code/:token", resetPass)
+
+  app.post("/api/resetpasswordSetting/:login/code/:password", reseSettingtPass)
 
   // Doctors API 
 
