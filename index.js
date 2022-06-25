@@ -4,7 +4,7 @@ const express = require("express")
 const cors = require("cors")
 const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
-const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass} = require("./API/auth");
+const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, UploadFile} = require("./API/auth");
 const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
@@ -12,10 +12,13 @@ const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = re
 const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
+const fileupload = require("express-fileupload");
 
 //create an app 
 
 const app = express();
+
+app.use(fileupload());
 
 //enable Listening http server
 
@@ -23,7 +26,7 @@ app.listen("9000", (req, resp) => {
     console.log("Server is runing on port 9000...");
   });
 
-  app.use(bodyparser.urlencoded({extended : true}))
+  app.use(bodyparser.urlencoded({limit: "50mb", extended : true, parameterLimit : 50000}))
 
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
@@ -46,6 +49,8 @@ app.listen("9000", (req, resp) => {
   app.post("/api/resetpassword/:login/code/:token", resetPass)
 
   app.post("/api/resetpasswordSetting/:login/code/:password", reseSettingtPass)
+
+  app.post("/api/UploadFile", UploadFile)
 
   // Doctors API 
 
@@ -96,7 +101,7 @@ app.get("/api/Doctor/NombreConsultation/id/:id", ConsultationNbr);
 app.get("/api/Doctor/TotalConsultation/id/:id", ConsultationTotal);
 app.get("/api/Doctor/ListConsultation/id/:id", ConsultationList);
 app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
-
+ 
 
   // RVD API 
 

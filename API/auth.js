@@ -9,10 +9,9 @@ const { Email } = require("../Models/Email");
 const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
 
+var multer = require("multer");
+
 exports.register = async (req, resp) => {
-  
-
-
   //fetch data
   let newDoctor = new Doctor(
     req.body.Nom,
@@ -20,13 +19,12 @@ exports.register = async (req, resp) => {
     req.body.Spécialité,
     req.body.CIN,
     "",
-    req.body.Email 
+    req.body.Email
   );
 
   let newCabinet = new Cabinet(req.body.Adresse, req.body.Tel, req.body.Email);
 
   let newAccount = new Account(req.body.Login, req.body.Password, "docteur");
-
 
   //validation des données
 
@@ -104,12 +102,11 @@ exports.register = async (req, resp) => {
 
             newDoctor.Cabinet = result[result.length - 1].Id;
             newDoctor.Account = res[res.length - 1].Id;
-            console.log(newDoctor)
-
+            console.log(newDoctor);
 
             if (sqlQuery(query2, newDoctor)) {
               SendEmail(userInfo);
-              console.log("hello")
+              console.log("hello");
             }
 
             console.log(newDoctor);
@@ -118,7 +115,7 @@ exports.register = async (req, resp) => {
       }
     } catch (err) {
       console.log(err.message);
-      resp.send(err.message)
+      resp.send(err.message);
     }
   }
 };
@@ -307,7 +304,7 @@ exports.forgot = async (Req, Resp) => {
 
 exports.resetPass = async (Req, Resp) => {
   let login = Req.params.login;
-  let Token = Req.params.token ?  Req.params.token : "";
+  let Token = Req.params.token ? Req.params.token : "";
 
   let pass = Req.body;
 
@@ -349,39 +346,65 @@ exports.resetPass = async (Req, Resp) => {
 exports.reseSettingtPass = async (Req, Resp) => {
   let login = Req.params.login;
   let Password = Req.params.password;
-  console.log(login)
-  console.log(Password)
+  console.log(login);
+  console.log(Password);
 
   let PassInfos = Req.body;
 
-  console.log(PassInfos)
+  console.log(PassInfos);
 
   let res = await sqlQuery(
     `SELECT  Password FROM Account WHERE Login ='${login}' `
   );
-  
 
- let result = await bcrypt.compare(Password, res[0].Password)
-
- 
+  let result = await bcrypt.compare(Password, res[0].Password);
 
   if (res.length === 0) {
     Resp.status(201).json({ message: "Mot de passe invalide" });
   } else {
-    
-      let result = await bcrypt.hash(PassInfos.password, 10);
+    let result = await bcrypt.hash(PassInfos.password, 10);
 
-      if (
-        sqlQuery(
-          `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
-        )
+    if (
+      sqlQuery(
+        `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
       )
-        Resp.send(`
+    )
+      Resp.send(`
            
           <h1> Votre mot de passe a été changer avec succés </h1>
           <a href= "http://localhost:3000/Login">Connectez vous</a>
           
           `);
+  }
+};
+
+exports.UploadFile = async (Req, Resp) => {
+
+  let file = Req.files.image
+  let fileName = file.name
+
+  console.log(file);
+  console.log(fileName)
+
+  try {
     
+    if (!Req.files === null) return Resp.status(400).send("No files");
+
+    // use mv() to store pic on the server
+
+   // let UploadPath = __dirname + "\\Picture\\" + fileName;
+   console.log(__dirname)
+
+    file.mv( `${__dirname}/Picture/${fileName}` , err => {
+      if (err) {
+        return Resp.status(500).send(err);
+      }
+  
+      Resp.json({ fileName: fileName, filePath: `/Picture/${fileName}` });
+    });
+
+    //if (Resp) Resp.status(200).send("File uploaded");
+  } catch (err) {
+    console.log(err.message);
   }
 };
