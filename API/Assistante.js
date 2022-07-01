@@ -168,3 +168,23 @@ exports.UpdateAssistante = async (req, resp) => {
     console.log(err.message);
   }
 };
+
+exports.UpdateAvatarAssistante= async (req, resp) => {
+  let IdAssistante = req.params.id;
+  let Avatar = req.body.Filename
+
+  console.log(IdAssistante)
+
+  try {
+    let query = `UPDATE  Assistante Set Avatar = '${Avatar}'  WHERE id = '${IdAssistante}'`;
+
+    if (sqlQuery(query)) {
+      resp
+        .status(201)
+        .json({ message: "Votre photo a été changer avec succés" });
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+

@@ -7,7 +7,7 @@ const nodemailer = require("nodemailer");
 exports.SendEmail = async (EmailInfo) => {
 
     let transporter = nodemailer.createTransport({
-        host: "smtp.mailgun.org",
+        host: "mailgun.org",
         port: 587,
         secure : false, // true for 465, false for other ports
         auth: {

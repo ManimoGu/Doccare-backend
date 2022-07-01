@@ -383,8 +383,7 @@ exports.UploadFile = async (Req, Resp) => {
   let file = Req.files.image
   let fileName = file.name
 
-  console.log(file);
-  console.log(fileName)
+
 
   try {
     

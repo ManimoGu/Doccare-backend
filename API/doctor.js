@@ -224,3 +224,28 @@ exports.DoctorList = async (req, resp) => {
     console.log(err.message);
   }
 };
+
+
+exports.UpdateAvatarDocteur= async (req, resp) => {
+
+
+  let IdDocteur = req.params.id;
+  let Avatar = req.body.file
+
+
+console.log(IdDocteur, Avatar)
+
+  try {
+    let query = `UPDATE  docteur Set Avatar = '${Avatar}'  WHERE id = '${IdDocteur}'`;
+
+    if (sqlQuery(query)) {
+      resp
+        .status(201)
+        .json({ message: "Votre photo a été changer avec succés" });
+        console.log("hello")
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};
+

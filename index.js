@@ -6,13 +6,14 @@ const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, UploadFile} = require("./API/auth");
 const { API_URL } = require("./config/api");
-const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList } = require("./API/doctor");
-const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList } = require("./API/Assistante");
+const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList, UpdateAvatarDocteur } = require("./API/doctor");
+const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList, UpdateAvatarAssistante } = require("./API/Assistante");
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
 const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
 const fileupload = require("express-fileupload");
+const path = require('path')
 
 //create an app 
 
@@ -20,10 +21,12 @@ const app = express();
 
 app.use(fileupload());
 
+
+
 //enable Listening http server
 
 app.listen("9000", (req, resp) => {
-    console.log("Server is runing on port 9000...");
+    console.log("Server is runing on port 9000..." + __dirname);
   });
 
   app.use(bodyparser.urlencoded({limit: "50mb", extended : true, parameterLimit : 50000}))
@@ -32,6 +35,8 @@ app.listen("9000", (req, resp) => {
   app.use(bodyparser.json())
 
   app.use(cors())
+
+  app.use(express.static('API'))
 
 
   // Signin API
@@ -65,6 +70,9 @@ app.listen("9000", (req, resp) => {
   app.get("/api/Doctor/DoctorList", DoctorList);
 
 
+  app.put("/api/Doctor/DoctorList/UpdatePic/id/:id", UpdateAvatarDocteur);
+
+
   // Assistante API 
 
   app.post("/api/Doctor/AddAssistante/id/:cabinet", AddAssistante);
@@ -74,6 +82,9 @@ app.listen("9000", (req, resp) => {
   app.put("/api/Doctor/UpdateAssistante/id/:id",UpdateAssistante);
 
   app.get("/api/Doctor/AssistanteList/id/:id", AssistanteList);
+
+  app.get("/api/Doctor/AssistanteList/ChangePic/id/:id", UpdateAvatarAssistante);
+
 
   // Patient API 
 

@@ -25,6 +25,7 @@ exports.PatientList = async (req, resp) => {
 
     resp.status(201).json({
       ListPatient: res,
+      dir : __dirname,
     });
   } catch (err) {
     console.log(err.message);
