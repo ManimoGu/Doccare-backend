@@ -30,18 +30,18 @@ exports.AddAssistante = async (req, resp) => {
 
 
   let newAssistance = new Assistante(
-    req.body.Nom[0],
-    req.body.Prénom[0],
-    req.body.Date_naissance[0],
-    req.body.CIN[0],
-    req.body.Tel[0],
-    req.body.Adresse[0],
-    req.body.Avatar[0],
+    req.body.Nom,
+    req.body.Prénom,
+    req.body.Date_naissance,
+    req.body.CIN,
+    req.body.Tel,
+    req.body.Adresse,
+    req.body.Avatar,
     new Date(Date.now()),
     Cab
   );
 
-  let newAccount = new Account(req.body.CIN, req.body.password[0], "Assistante");
+  let newAccount = new Account(req.body.CIN, req.body.password, "Assistante");
 
 
   /*if (validationRegister(newDoctor, newAccount, newCabinet))
@@ -107,7 +107,7 @@ exports.AddAssistante = async (req, resp) => {
         newAssistance.Account = res[res.length - 1].Id;
 
         if (sqlQuery(query2, newAssistance)) {
-          SendEmail(userInfo);
+         // SendEmail(userInfo);
         }
       }
     }
@@ -171,7 +171,7 @@ exports.UpdateAssistante = async (req, resp) => {
 
 exports.UpdateAvatarAssistante= async (req, resp) => {
   let IdAssistante = req.params.id;
-  let Avatar = req.body.Filename
+  let Avatar = req.body.file
 
   console.log(IdAssistante)
 

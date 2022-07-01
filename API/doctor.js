@@ -11,15 +11,16 @@ exports.DoctorProfil = async (req, Resp) => {
 
   try {
     let res = await sqlQuery(`SELECT  * FROM Account WHERE Login ='${login}' `);
-
+     console.log(res)
     if (res.length === 0) {
       Resp.status(201).json({
         message: "Nom d'utilisateur introuvables",
       });
     } else {
       let result = await bcrypt.compare(pass, res[0].Password);
-
+       console.log(result)
       if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
+      
       else {
         if (res[0].Fonction === "Docteur") {
           let DoctorInfo = await sqlQuery(
@@ -45,6 +46,7 @@ exports.DoctorProfil = async (req, Resp) => {
           let AssistanteInfo = await sqlQuery(
             `SELECT  * FROM  assistante WHERE Account ='${res[0].Id}' `
           );
+          console.log(AssistanteInfo)
 
           let CabinetInfo = await sqlQuery(
             `SELECT * FROM cabinet WHERE  Id ='${AssistanteInfo[0].Cabinet}' `
@@ -179,9 +181,6 @@ exports.DeleteDoctor = async (req, resp) => {
 };
 
 exports.UpdateDoctor = async (req, resp) => {
-  
- 
-
   let newDoctor = new Doctor(
     req.body.Doctor_modif.Nom,
     req.body.Doctor_modif.Prénom,
@@ -191,18 +190,14 @@ exports.UpdateDoctor = async (req, resp) => {
     req.body.Doctor_modif.Email
   );
 
- 
-
   try {
     if (
       sqlQuery(
         `UPDATE docteur SET Nom = '${newDoctor.nom}', Prénom = '${newDoctor.prénom}', Spécialité = '${newDoctor.spécialité}', CIN =' ${newDoctor.CIN}', Tel = '${newDoctor.tel}', Email = '${newDoctor.email}' WHERE Id ='${req.body.Doctor_modif.Id}'`
-      )
-      &&
+      ) &&
       sqlQuery(
         `UPDATE cabinet SET Adresse = '${req.body.Cabinet_modif.Adresse}', Email = '${req.body.Cabinet_modif.Email}', Tel = '${req.body.Cabinet_modif.Tel}' WHERE Id ='${req.body.Cabinet_modif.Id}'`
       )
-
     ) {
       resp
         .status(201)
@@ -225,15 +220,11 @@ exports.DoctorList = async (req, resp) => {
   }
 };
 
-
-exports.UpdateAvatarDocteur= async (req, resp) => {
-
-
+exports.UpdateAvatarDocteur = async (req, resp) => {
   let IdDocteur = req.params.id;
-  let Avatar = req.body.file
+  let Avatar = req.body.file;
 
-
-console.log(IdDocteur, Avatar)
+  console.log(IdDocteur, Avatar);
 
   try {
     let query = `UPDATE  docteur Set Avatar = '${Avatar}'  WHERE id = '${IdDocteur}'`;
@@ -242,10 +233,9 @@ console.log(IdDocteur, Avatar)
       resp
         .status(201)
         .json({ message: "Votre photo a été changer avec succés" });
-        console.log("hello")
+      console.log("hello");
     }
   } catch (err) {
     console.log(err.message);
   }
 };
-

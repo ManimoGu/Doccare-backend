@@ -14,7 +14,7 @@ const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateCo
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
 const fileupload = require("express-fileupload");
 const path = require('path')
-
+const JWT = require("jsonwebtoken")
 //create an app 
 
 const app = express();
@@ -83,7 +83,7 @@ app.listen("9000", (req, resp) => {
 
   app.get("/api/Doctor/AssistanteList/id/:id", AssistanteList);
 
-  app.get("/api/Doctor/AssistanteList/ChangePic/id/:id", UpdateAvatarAssistante);
+  app.put("/api/Doctor/AssistanteList/ChangePic/id/:id", UpdateAvatarAssistante);
 
 
   // Patient API 
