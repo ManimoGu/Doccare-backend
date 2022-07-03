@@ -163,7 +163,7 @@ exports.AddPatient = async (req, resp) => {
                 sqlQuery(query2, newFicheMedical) &&
                 sqlQuery(query3, NewDossierMedical)
               ) {
-                SendEmail(userInfo);
+                //SendEmail(userInfo);
               }
             }
           }

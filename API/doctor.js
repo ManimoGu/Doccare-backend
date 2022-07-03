@@ -4,14 +4,18 @@ const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken")
+const {Access} = require("../Helpers/JwtVerification")
+
+require("dotenv").config();
+
 
 exports.DoctorProfil = async (req, Resp) => {
   let login = req.params.login;
   let pass = req.params.password;
 
   try {
-    let res = await sqlQuery(`SELECT  * FROM Account WHERE Login ='${login}' `);
-     console.log(res)
+    let res = await sqlQuery(`SELECT  * FROM Account WHERE Login ='${login}' `)
     if (res.length === 0) {
       Resp.status(201).json({
         message: "Nom d'utilisateur introuvables",
@@ -34,11 +38,14 @@ exports.DoctorProfil = async (req, Resp) => {
           if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
             Resp.status(201).json({ message: "Compte introuvable" });
           else {
+
+            let ACCESS = jwt.sign(res[0].Id, process.env.ACCESS_TOKEN)
             Resp.status(201).json({
               infos: {
                 Doctor: DoctorInfo[0],
                 AccountInfo: res[0],
                 CabinetInfos: CabinetInfo[0],
+                Token : ACCESS
               },
             });
           }

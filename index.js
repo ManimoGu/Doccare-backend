@@ -21,6 +21,7 @@ const app = express();
 
 app.use(fileupload());
 
+app.use(express.json())
 
 
 //enable Listening http server
@@ -122,6 +123,8 @@ app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
   app.put("/api/DoctorAssistante/UpdateRDV/id/:id", UpdateRDV);
   app.get("/api/DoctorAssistante/NBRRDV/id/:id", RDVNbr);
   app.get("/api/DoctorAssistante/UpdateType/id/:id/Patient/:Patient", TypeUpdate);
+
+
 
 
 
