@@ -14,7 +14,8 @@ const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateCo
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
 const fileupload = require("express-fileupload");
 const path = require('path')
-const JWT = require("jsonwebtoken")
+const JWT = require("jsonwebtoken");
+const { Access } = require("./Helpers/JwtVerification");
 //create an app 
 
 const app = express();
@@ -54,75 +55,75 @@ app.listen("9000", (req, resp) => {
 
   app.post("/api/resetpassword/:login/code/:token", resetPass)
 
-  app.post("/api/resetpasswordSetting/:login/code/:password", reseSettingtPass)
+  app.post("/api/resetpasswordSetting/:login/code/:password",Access, reseSettingtPass)
 
-  app.post("/api/UploadFile", UploadFile)
+  app.post("/api/UploadFile",Access, UploadFile)
 
   // Doctors API 
 
   app.get("/api/Doctor/DoctorProfil/:login/password/:password", DoctorProfil);
 
-  app.get("/api/Doctor/AddDoctor/:cabinet", AddDoctor);
+  app.get("/api/Doctor/AddDoctor/:cabinet",Access, AddDoctor);
 
-  app.get("/api/Doctor/DeleteDoctor/:Id", DeleteDoctor);
+  app.get("/api/Doctor/DeleteDoctor/:Id",Access, DeleteDoctor);
   
-  app.post("/api/Doctor/UpdateDoctorCabinet", UpdateDoctor);
+  app.post("/api/Doctor/UpdateDoctorCabinet",Access, UpdateDoctor);
 
-  app.get("/api/Doctor/DoctorList", DoctorList);
+  app.get("/api/Doctor/DoctorList/id/:id",Access, DoctorList);
 
 
-  app.put("/api/Doctor/DoctorList/UpdatePic/id/:id", UpdateAvatarDocteur);
+  app.put("/api/Doctor/DoctorList/UpdatePic/id/:id",Access, UpdateAvatarDocteur);
 
 
   // Assistante API 
 
-  app.post("/api/Doctor/AddAssistante/id/:cabinet", AddAssistante);
+  app.post("/api/Doctor/AddAssistante/id/:cabinet",Access, AddAssistante);
 
-  app.delete("/api/Doctor/DeleteAssistante/id/:id", DeleteAssistante);
+  app.delete("/api/Doctor/DeleteAssistante/id/:id",Access, DeleteAssistante);
   
-  app.put("/api/Doctor/UpdateAssistante/id/:id",UpdateAssistante);
+  app.put("/api/Doctor/UpdateAssistante/id/:id",Access,UpdateAssistante);
 
-  app.get("/api/Doctor/AssistanteList/id/:id", AssistanteList);
+  app.get("/api/Doctor/AssistanteList/id/:id",Access, AssistanteList);
 
-  app.put("/api/Doctor/AssistanteList/ChangePic/id/:id", UpdateAvatarAssistante);
+  app.put("/api/Doctor/AssistanteList/ChangePic/id/:id",Access, UpdateAvatarAssistante);
 
 
   // Patient API 
 
-  app.get("/api/Doctor/NombredePatient/id/:id", PatientNbr);
-  app.get("/api/Doctor/DashboardList/id/:id", DashList);
-  app.get("/api/Doctor/PatientsList/id/:id", PatientList);
-  app.post("/api/Doctor/AddPatient/id/:id", AddPatient);
-  app.put("/api/Doctor/UpdatePatient/id/:id", UpdatePatient);
-  app.put("/api/Doctor/DeletePatient/id/:id/:Account", DeletePatient);
+  app.get("/api/Doctor/NombredePatient/id/:id",Access, PatientNbr);
+  app.get("/api/Doctor/DashboardList/id/:id",Access, DashList);
+  app.get("/api/Doctor/PatientsList/id/:id",Access,PatientList);
+  app.post("/api/Doctor/AddPatient/id/:id",Access, AddPatient);
+  app.put("/api/Doctor/UpdatePatient/id/:id",Access, UpdatePatient);
+  app.put("/api/Doctor/DeletePatient/id/:id/:Account",Access, DeletePatient);
 
 
 
   // Feedback API
 
-  app.get("/api/Doctor/NombredAvis/id/:id", ReviewsNbr);
-  app.get("/api/Doctor/ListMessage/id/:id", ListMessage);
-  app.post ("/api/Doctor/AddResponse/id/:id", AddResp);
-  app.get ("/api/Doctor/GetResponse/id/:id", getResponse);
+  app.get("/api/Doctor/NombredAvis/id/:id",Access, ReviewsNbr);
+  app.get("/api/Doctor/ListMessage/id/:id",Access, ListMessage);
+  app.post ("/api/Doctor/AddResponse/id/:id",Access, AddResp);
+  app.get ("/api/Doctor/GetResponse/id/:id",Access, getResponse);
 
 
   // Consultation API 
 
 
-app.get("/api/Doctor/NombreConsultation/id/:id", ConsultationNbr);
-app.get("/api/Doctor/TotalConsultation/id/:id", ConsultationTotal);
-app.get("/api/Doctor/ListConsultation/id/:id", ConsultationList);
-app.put("/api/Doctor/UpdateConsultation/id", UpdateConsultation);
+app.get("/api/Doctor/NombreConsultation/id/:id",Access, ConsultationNbr);
+app.get("/api/Doctor/TotalConsultation/id/:id",Access,ConsultationTotal);
+app.get("/api/Doctor/ListConsultation/id/:id",Access, ConsultationList);
+app.put("/api/Doctor/UpdateConsultation/id",Access, UpdateConsultation);
  
 
   // RVD API 
 
-  app.put("/api/DoctorAssistante/AddRDV/id/:id", ADDRDV);
-  app.get("/api/DoctorAssistante/ListRDV/id/:id", RDVList);
-  app.delete("/api/DoctorAssistante/DeleteRDV/id/:id", DeleteRDV);
-  app.put("/api/DoctorAssistante/UpdateRDV/id/:id", UpdateRDV);
-  app.get("/api/DoctorAssistante/NBRRDV/id/:id", RDVNbr);
-  app.get("/api/DoctorAssistante/UpdateType/id/:id/Patient/:Patient", TypeUpdate);
+  app.put("/api/DoctorAssistante/AddRDV/id/:id",Access, ADDRDV);
+  app.get("/api/DoctorAssistante/ListRDV/id/:id",Access, RDVList);
+  app.delete("/api/DoctorAssistante/DeleteRDV/id/:id",Access, DeleteRDV);
+  app.put("/api/DoctorAssistante/UpdateRDV/id/:id",Access, UpdateRDV);
+  app.get("/api/DoctorAssistante/NBRRDV/id/:id",Access, RDVNbr);
+  app.get("/api/DoctorAssistante/UpdateType/id/:id/Patient/:Patient",Access, TypeUpdate);
 
 
 

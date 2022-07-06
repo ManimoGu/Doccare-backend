@@ -9,7 +9,7 @@ const { Email } = require("../Models/Email");
 const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
 
-var multer = require("multer");
+
 
 exports.register = async (req, resp) => {
   //fetch data
@@ -343,65 +343,76 @@ exports.resetPass = async (Req, Resp) => {
   }
 };
 
-exports.reseSettingtPass = async (Req, Resp) => {
-  let login = Req.params.login;
-  let Password = Req.params.password;
-  console.log(login);
-  console.log(Password);
+exports.reseSettingtPass = async (req, Resp) => {
+  let login = req.params.login;
+  let Password = req.params.password;
+  let id = req.user;
+  let Cab = req.ID;
 
-  let PassInfos = Req.body;
+  let PassInfos = req.body;
 
-  console.log(PassInfos);
+  try {
+    if (id !== Cab)
+      Resp.status(201).json({
+        message: "Vous ne pouvez effectuer cette operation",
+      });
+    else {
+      let res = await sqlQuery(
+        `SELECT  Password FROM Account WHERE Login ='${login}' `
+      );
 
-  let res = await sqlQuery(
-    `SELECT  Password FROM Account WHERE Login ='${login}' `
-  );
+      let result = await bcrypt.compare(Password, res[0].Password);
 
-  let result = await bcrypt.compare(Password, res[0].Password);
+      if (!result) {
+        Resp.status(201).json({ message: "Mot de passe invalide" });
+      } else {
+        let resul = await bcrypt.hash(PassInfos.password, 10);
 
-  if (res.length === 0) {
-    Resp.status(201).json({ message: "Mot de passe invalide" });
-  } else {
-    let result = await bcrypt.hash(PassInfos.password, 10);
-
-    if (
-      sqlQuery(
-        `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
-      )
-    )
-      Resp.send(`
+        if (
+          sqlQuery(
+            `UPDATE Account SET Password = '${resul}' WHERE Login ='${login}'`
+          )
+        )
+          Resp.send(`
            
           <h1> Votre mot de passe a été changer avec succés </h1>
           <a href= "http://localhost:3000/Login">Connectez vous</a>
           
           `);
+      }
+    }
+  } catch (err) {
+    console.log(err.message);
   }
 };
 
 exports.UploadFile = async (Req, Resp) => {
-
-  let file = Req.files.image
-  let fileName = file.name
-
-
+  let file = Req.files.image;
+  let fileName = file.name;
+  let id = req.user;
+  let Cab = req.ID;
 
   try {
-    
-    if (!Req.files === null) return Resp.status(400).send("No files");
+    if (id !== Cab)
+      resp
+        .status(201)
+        .json({ message: "Vous ne pouvez effectuer cette operation" });
+    else {
+      if (!Req.files === null) return Resp.status(400).send("No files");
 
-    // use mv() to store pic on the server
+      // use mv() to store pic on the server
 
-   // let UploadPath = __dirname + "\\Picture\\" + fileName;
-   console.log(__dirname)
+      // let UploadPath = __dirname + "\\Picture\\" + fileName;
+      console.log(__dirname);
 
-    file.mv( `${__dirname}/Picture/${fileName}` , err => {
-      if (err) {
-        return Resp.status(500).send(err);
-      }
-  
-      Resp.json({ fileName: fileName, filePath: `/Picture/${fileName}` });
-    });
+      file.mv(`${__dirname}/Picture/${fileName}`, (err) => {
+        if (err) {
+          return Resp.status(500).send(err);
+        }
 
+        Resp.json({ fileName: fileName, filePath: `/Picture/${fileName}` });
+      });
+    }
     //if (Resp) Resp.status(200).send("File uploaded");
   } catch (err) {
     console.log(err.message);
