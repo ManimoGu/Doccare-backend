@@ -83,19 +83,22 @@ exports.AddResp = async (req, resp) => {
 exports.getResponse = async (req, resp) => {
   let Feed = req.params.id;
   let id = req.user;
-  let Cab = req.ID
+  let Cab = req.ID;
 
   try {
-    if(id !== Cab)  resp.status(201).json({ message: "Vous ne pouvez effectuer cette operation" });
-    else{
-    let res = await sqlQuery(`SELECT * FROM Reponse Where Feed = '${Feed}'`);
+    if (id !== Cab)
+      resp
+        .status(201)
+        .json({ message: "Vous ne pouvez effectuer cette operation" });
+    else {
+      let res = await sqlQuery(`SELECT * FROM Reponse Where Feed = '${Feed}'`);
 
-    console.log(res);
+      console.log(res);
 
-    resp.status(201).json({
-      ListResp: res,
-    });
-  }
+      resp.status(201).json({
+        ListResp: res,
+      });
+    }
   } catch (err) {
     console.log(err.message);
   }

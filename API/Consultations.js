@@ -64,7 +64,8 @@ exports.ConsultationNbr = async (req, resp) => {
 };
 
 exports.ConsultationTotal = async (req, resp) => {
-  let Cab = req.params.Id;
+
+  let Cab = req.params.id;
   let id = req.user;
 
   try {

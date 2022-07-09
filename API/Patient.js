@@ -42,7 +42,7 @@ exports.PatientList = async (req, resp) => {
 exports.PatientNbr = async (req, resp) => {
   let Cab = req.params.id;
   let id = req.user;
-  console.log(Cab + " " + id )
+
 
   try {
     if (id !== Cab)
