@@ -129,6 +129,7 @@ exports.AddAssistante = async (req, resp) => {
 exports.DeleteAssistante = async (req, resp) => {
   let IdAssistante = req.params.id;
   let id = req.user;
+  let Cab = req.ID;
 
   try {
     if (id !== Cab)

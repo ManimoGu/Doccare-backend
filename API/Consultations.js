@@ -106,4 +106,5 @@ exports.UpdateConsultation = async (req, resp) => {
   } catch {
     (err) => console.log(err.message);
   }
-};
+}; 
+

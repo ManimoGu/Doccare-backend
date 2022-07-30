@@ -286,3 +286,33 @@ exports.DeletePatient = async (req, resp) => {
     (err) => console.log(err.message);
   }
 };
+
+exports.Patient_consultations = async (req, resp) =>{
+
+  let Cab = req.params.idCabinet;
+  let Patient = req.params.idPatient;
+  let id = req.user;
+
+
+  try {
+    if (id !== Cab)
+      resp
+        .status(201)
+        .json({ message: "Vous ne pouvez effectuer cette operation" });
+    else {
+      let List = await sqlQuery(
+        `SELECT * FROM RDV JOIN consultation  on RDV.id = consultation.RDV  join fiche_consultation on consultation.id = fiche_consultation.Consultation WHERE rdv.Cabinet = '${Cab}' and rdv.Patient = '${Patient}' `
+      );
+
+      console.log(List)
+
+      resp.status(201).json({
+        AllFiches: List,
+      });
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+
+
+}

@@ -8,7 +8,7 @@ const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, U
 const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList, UpdateAvatarDocteur } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList, UpdateAvatarAssistante } = require("./API/Assistante");
-const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient } = require("./API/Patient");
+const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient, Patient_consultations } = require("./API/Patient");
 const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
@@ -96,6 +96,7 @@ app.listen("9000", (req, resp) => {
   app.post("/api/Doctor/AddPatient/id/:id",Access, AddPatient);
   app.put("/api/Doctor/UpdatePatient/id/:id",Access, UpdatePatient);
   app.put("/api/Doctor/DeletePatient/id/:id/:Account",Access, DeletePatient);
+  app.get("/api/Doctor/Patient_fiche_consultation/Cabinet/:idCabinet/Patient/:idPatient",Access, Patient_consultations);
 
 
 

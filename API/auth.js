@@ -11,6 +11,7 @@ const { validationRegister } = require("../Helpers/validation");
 
 
 
+
 exports.register = async (req, resp) => {
   //fetch data
   let newDoctor = new Doctor(
@@ -389,8 +390,8 @@ exports.reseSettingtPass = async (req, Resp) => {
 exports.UploadFile = async (Req, Resp) => {
   let file = Req.files.image;
   let fileName = file.name;
-  let id = req.user;
-  let Cab = req.ID;
+  let id = Req.user;
+  let Cab = Req.ID;
 
   try {
     if (id !== Cab)

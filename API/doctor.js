@@ -59,11 +59,14 @@ exports.DoctorProfil = async (req, Resp) => {
           if (AssistanteInfo.length === 0)
             Resp.status(201).json({ message: "Compte introuvable" });
           else {
+            let ACCESS = jwt.sign(CabinetInfo[0].Id, process.env.ACCESS_TOKEN);
+            console.log(ACCESS)
             Resp.status(201).json({
               infos: {
                 Assistante: AssistanteInfo[0],
                 AccountInfo: res[0],
                 CabinetInfos: CabinetInfo[0],
+                Token: ACCESS,
               },
             });
           }
