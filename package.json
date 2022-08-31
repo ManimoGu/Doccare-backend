@@ -16,11 +16,12 @@
     "express": "^4.17.2",
     "express-fileupload": "^1.4.0",
     "express-jwt": "^7.7.2",
+    "fs": "^0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.5-lts.1",
     "mysql": "^2.18.1",
     "nodemailer": "^6.7.2",
-    "nodemon": "^2.0.18",
+    "nodemon": "^2.0.19",
     "randomstring": "^1.2.2"
   }
 }

@@ -8,6 +8,8 @@ const randomstring = require("randomstring");
 const { Email } = require("../Models/Email");
 const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
+const fs = require("fs");
+
 
 
 
@@ -392,10 +394,13 @@ exports.UploadFile = async (Req, Resp) => {
   let fileName = file.name;
   let id = Req.user;
   let Cab = Req.ID;
+  let Nom = Req.params.Nom
+  let Prénom = Req.params.Prenom
+
 
   try {
     if (id !== Cab)
-      resp
+      Resp
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -404,14 +409,31 @@ exports.UploadFile = async (Req, Resp) => {
       // use mv() to store pic on the server
 
       // let UploadPath = __dirname + "\\Picture\\" + fileName;
-      console.log(__dirname);
+      var path = __dirname + `\\Ressources\\Patients\\${Nom} ${Prénom}`;
+      console.log(path)
 
-      file.mv(`${__dirname}/Picture/${fileName}`, (err) => {
+      fs.access(path, (error) =>{
+
+        if(error){
+
+          fs.mkdir(path, (error)=>{
+            if(error){
+              console.log(error)
+            }else{
+              console.log("New Directory created successfully !!");
+            }
+          } )
+
+        }
+
+      })
+
+      file.mv(`${__dirname}/Ressources/Patients/${Nom} ${Prénom}/${fileName}`, (err) => {
         if (err) {
           return Resp.status(500).send(err);
         }
 
-        Resp.json({ fileName: fileName, filePath: `/Picture/${fileName}` });
+        Resp.json({ fileName: fileName, filePath: `/Ressources/Patients/${Nom} ${Prénom}/{${fileName}` });
       });
     }
     //if (Resp) Resp.status(200).send("File uploaded");

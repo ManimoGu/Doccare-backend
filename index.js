@@ -57,7 +57,7 @@ app.listen("9000", (req, resp) => {
 
   app.post("/api/resetpasswordSetting/:login/code/:password",Access, reseSettingtPass)
 
-  app.post("/api/UploadFile",Access, UploadFile)
+  app.post("/api/UploadFile/Nom/:Nom/Prenom/:Prenom",Access, UploadFile)
 
   // Doctors API 
 
