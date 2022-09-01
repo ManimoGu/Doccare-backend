@@ -10,10 +10,6 @@ const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
 const fs = require("fs");
 
-
-
-
-
 exports.register = async (req, resp) => {
   //fetch data
   let newDoctor = new Doctor(
@@ -394,46 +390,47 @@ exports.UploadFile = async (Req, Resp) => {
   let fileName = file.name;
   let id = Req.user;
   let Cab = Req.ID;
-  let Nom = Req.params.Nom
-  let Prénom = Req.params.Prenom
-
+  let Nom = Req.params.Nom;
+  let Prénom = Req.params.Prenom;
+  let type = Req.params.type;
+  console.log(type);
 
   try {
     if (id !== Cab)
-      Resp
-        .status(201)
-        .json({ message: "Vous ne pouvez effectuer cette operation" });
+      Resp.status(201).json({
+        message: "Vous ne pouvez effectuer cette operation",
+      });
     else {
       if (!Req.files === null) return Resp.status(400).send("No files");
 
       // use mv() to store pic on the server
 
       // let UploadPath = __dirname + "\\Picture\\" + fileName;
-      var path = __dirname + `\\Ressources\\Patients\\${Nom} ${Prénom}`;
-      console.log(path)
+      if (type === "Patient")
+        var path = __dirname + `\\Ressources\\Patients\\${Nom} ${Prénom}`;
+      if (type === "Assistante")
+        var path = __dirname + `\\Ressources\\Assistante\\${Nom} ${Prénom}`;
+      if (type === "Doctor")
+        var path = __dirname + `\\Ressources\\Doctor\\${Nom} ${Prénom}`;
 
-      fs.access(path, (error) =>{
-
-        if(error){
-
-          fs.mkdir(path, (error)=>{
-            if(error){
-              console.log(error)
-            }else{
+      fs.access(path, (error) => {
+        if (error) {
+          fs.mkdir(path, (error) => {
+            if (error) {
+              console.log(error);
+            } else {
               console.log("New Directory created successfully !!");
             }
-          } )
-
+          });
         }
+      });
 
-      })
-
-      file.mv(`${__dirname}/Ressources/Patients/${Nom} ${Prénom}/${fileName}`, (err) => {
+      file.mv(`${path}/${fileName}`, (err) => {
         if (err) {
           return Resp.status(500).send(err);
         }
 
-        Resp.json({ fileName: fileName, filePath: `/Ressources/Patients/${Nom} ${Prénom}/{${fileName}` });
+        Resp.json({ fileName: fileName, filePath: `${path}/{${fileName}` });
       });
     }
     //if (Resp) Resp.status(200).send("File uploaded");
