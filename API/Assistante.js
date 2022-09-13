@@ -174,6 +174,7 @@ exports.UpdateAssistante = async (req, resp) => {
 
   try {
     if (id !== Cab)
+  
       resp
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });

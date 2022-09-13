@@ -393,7 +393,7 @@ exports.UploadFile = async (Req, Resp) => {
   let Nom = Req.params.Nom;
   let Prénom = Req.params.Prenom;
   let type = Req.params.type;
-  console.log(type);
+
 
   try {
     if (id !== Cab)
