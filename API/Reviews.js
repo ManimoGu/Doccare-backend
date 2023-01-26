@@ -36,9 +36,10 @@ exports.ListMessage = async (req, resp) => {
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let res = await sqlQuery(
-        `SELECT feedback.Id as Id, Commentaire, Type, Date, Patient.Id as Patient_Id, Nom, Prénom, Civilité, CIN, Date_naissance, Tel, Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account from feedback join patient on feedback.Patient = patient.Id WHERE Type = 'Message'`
+        `SELECT feedback.Id as Id, Commentaire, Type, Date, patient.Id as Patient_Id, Nom, Prénom, Civilité, CIN, Date_naissance, Tel, Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account from feedback join patient on feedback.Patient = patient.Id WHERE Type = 'Message'`
       );
-
+      
+      console.log(res)
       resp.status(201).json({
         ListMessage: res,
       });
@@ -67,7 +68,7 @@ exports.AddResp = async (req, resp) => {
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let query = `INSERT INTO Reponse Set ?`;
+      let query = `INSERT INTO reponse Set ?`;
 
       if (sqlQuery(query, newResponse)) {
         resp
@@ -91,7 +92,7 @@ exports.getResponse = async (req, resp) => {
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(`SELECT * FROM Reponse Where Feed = '${Feed}'`);
+      let res = await sqlQuery(`SELECT * FROM reponse Where Feed = '${Feed}'`);
 
       console.log(res);
 

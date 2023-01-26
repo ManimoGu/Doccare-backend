@@ -6,7 +6,7 @@ exports.DashList = async (req, resp) => {
 
   try {
     let List = await sqlQuery(
-      `SELECT * FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
+      `SELECT * FROM patient join rdv on patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
 
     resp.status(201).json({
@@ -28,7 +28,7 @@ exports.ConsultationList = async (req, resp) => {
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let List = await sqlQuery(
-        `SELECT * FROM Consultation   JOIN  rdv on consultation.Rdv = rdv.id  join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
+        `SELECT * FROM consultation   JOIN  rdv on consultation.Rdv = rdv.id  join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
       );
 
       resp.status(201).json({

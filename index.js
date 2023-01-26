@@ -2,13 +2,12 @@
 
 const express = require("express")
 const cors = require("cors")
-const {DB} = require('./Config/mysql');
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, UploadFile} = require("./API/auth");
 const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList, UpdateAvatarDocteur } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList, UpdateAvatarAssistante } = require("./API/Assistante");
-const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient, Patient_consultations } = require("./API/Patient");
+const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient, Patient_consultations, PatientFiles } = require("./API/Patient");
 const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews");
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
@@ -36,7 +35,12 @@ app.listen("9000", (req, resp) => {
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
 
-  app.use(cors())
+  app.use(cors({
+    origin : '*',
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+  }))
 
   app.use(express.static('API'))
 
@@ -97,6 +101,7 @@ app.listen("9000", (req, resp) => {
   app.put("/api/Doctor/UpdatePatient/id/:id",Access, UpdatePatient);
   app.put("/api/Doctor/DeletePatient/id/:id/:Account",Access, DeletePatient);
   app.get("/api/Doctor/Patient_fiche_consultation/Cabinet/:idCabinet/Patient/:idPatient",Access, Patient_consultations);
+  app.put("/api/Doctor/Patient_fiche_consultation/AddFile/idFiche/:idFiche", PatientFiles)
 
 
 
@@ -106,6 +111,7 @@ app.listen("9000", (req, resp) => {
   app.get("/api/Doctor/ListMessage/id/:id",Access, ListMessage);
   app.post ("/api/Doctor/AddResponse/id/:id",Access, AddResp);
   app.get ("/api/Doctor/GetResponse/id/:id",Access, getResponse);
+
 
 
   // Consultation API 

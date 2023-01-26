@@ -394,7 +394,7 @@ exports.UploadFile = async (Req, Resp) => {
   let Prénom = Req.params.Prenom;
   let type = Req.params.type;
 
-
+   
   try {
     if (id !== Cab)
       Resp.status(201).json({
@@ -430,7 +430,7 @@ exports.UploadFile = async (Req, Resp) => {
           return Resp.status(500).send(err);
         }
 
-        Resp.json({ fileName: fileName, filePath: `${path}/{${fileName}` });
+        Resp.json({ fileName: fileName, filePath: `${path}\\{${fileName}` });
       });
     }
     //if (Resp) Resp.status(200).send("File uploaded");

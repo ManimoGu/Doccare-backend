@@ -3,8 +3,6 @@ const { RDV } = require("../Models/RDV");
 const { Consultation } = require("../Models/Consultation");
 const { FicheConsultation } = require("../Models/FicheConsultation");
 
-
-
 exports.ADDRDV = async (req, resp) => {
   let Cab = req.params.id;
   let name = req.body.name;
@@ -22,7 +20,7 @@ exports.ADDRDV = async (req, resp) => {
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let List = await sqlQuery(
-        ` SELECT Id FROM Patient WHERE (Nom = '${Name[0]}' && Prénom = '${Name[1]}') ||  (Nom = '${Name[1]}' && Prénom = '${Name[0]}') `
+        ` SELECT Id FROM patient WHERE (Nom = '${Name[0]}' && Prénom = '${Name[1]}') ||  (Nom = '${Name[1]}' && Prénom = '${Name[0]}') `
       );
 
       if (List.length === 0) {
@@ -66,12 +64,10 @@ exports.RDVList = async (req, resp) => {
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let List = await sqlQuery(
-        `SELECT * FROM Patient join rdv on Patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
+        `SELECT * FROM patient join rdv on patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
-        listCons: List,
-      });
+      resp.status(201).json({ listCons: List });
     }
   } catch (err) {
     console.log(err.message);
@@ -148,6 +144,7 @@ exports.TypeUpdate = async (req, resp) => {
   let RDV = req.params.id;
   let Patient = req.params.Patient;
   let id = req.user;
+  console.log(Patient + " " + id);
   let Cab = req.ID;
 
   try {

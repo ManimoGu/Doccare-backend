@@ -9,7 +9,7 @@ exports.Access = (req, res, next) =>{
     if(token === null ) return res.sendStatus(403)
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, result) =>{
 
-        if (err)  return  res.sendStatus(403)
+        if (err)  return  console.log(err)
         req.user = result
         req.ID = Header_token && Header_token.split(' ')[2]
         next()

@@ -14,7 +14,7 @@ exports.DoctorProfil = async (req, Resp) => {
   let pass = req.params.password;
 
   try {
-    let res = await sqlQuery(`SELECT  * FROM Account WHERE Login ='${login}' `);
+    let res = await sqlQuery(`SELECT  * FROM account WHERE Login ='${login}' `);
     if (res.length === 0) {
       Resp.status(201).json({
         message: "Nom d'utilisateur introuvables",
@@ -105,7 +105,7 @@ exports.AddDoctor = async (req, resp) => {
           .json({ message: "Vous ne pouvez effectuer cette operation" });
       else {
         let res = await sqlQuery(
-          `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
+          `SELECT *  FROM account WHERE Login = '${newAccount.login}'`
         );
 
         console.log(res);
@@ -153,11 +153,11 @@ exports.AddDoctor = async (req, resp) => {
 
           console.log(newAccount);
 
-          let query = `INSERT INTO Account Set ?`;
-          let query2 = `INSERT INTO Docteur Set ?`;
+          let query = `INSERT INTO account Set ?`;
+          let query2 = `INSERT INTO docteur Set ?`;
 
           if (sqlQuery(query, newAccount)) {
-            let res = await sqlQuery(`SELECT * FROM Account `);
+            let res = await sqlQuery(`SELECT * FROM account `);
 
             newDoctor.Account = res[res.length - 1].Id;
             newDoctor.Cabinet = Cab;
@@ -192,7 +192,7 @@ exports.DeleteDoctor = async (req, resp) => {
       );
 
       if (sqlQuery(`DELETE FROM docteur WHERE Id ='${IdDoctor}'`)) {
-        if (sqlQuery(`DELETE FROM Account WHERE Id ='${res[0].Account}'`)) {
+        if (sqlQuery(`DELETE FROM account WHERE Id ='${res[0].Account}'`)) {
           resp
             .status(201)
             .json({ message: "Le docteur a été supprimer avec succés" });

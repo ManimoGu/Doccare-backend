@@ -6,8 +6,8 @@ const { Account } = require("../models/Account");
 const { dossier_medical } = require("../Models/Dossier_medical");
 const bcrypt = require("bcrypt");
 const { Email } = require("../Models/Email");
-const { SendEmail } = require("../Helpers/Sendemail");
-const { Access } = require("../Helpers/JwtVerification");
+const pdfDocument = require("pdfkit");
+const fs = require("fs");
 
 exports.PatientDash = async (req, resp) => {};
 
@@ -23,10 +23,10 @@ exports.PatientList = async (req, resp) => {
     else {
       let res = await sqlQuery(
         `SELECT 
-      Patient.Id as IdPatient, Nom, Prénom, Civilité, CIN, Date_naissance, Tel , Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account,
-      Fiche_medical.Id as Fiche, Poids, Taille, Maladie_chronique, Groupe_sanguin, Maladie_infectueuse, Allergie, Habitude_toxique, Chirurgie_antérieure, Maladie_héréditaire, Autre_antécédants,
+      patient.Id as IdPatient, Nom, Prénom, Civilité, CIN, Date_naissance, Tel , Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account,
+      fiche_medical.Id as Fiche, Poids, Taille, Maladie_chronique, Groupe_sanguin, Maladie_infectueuse, Allergie, Habitude_toxique, Chirurgie_antérieure, Maladie_héréditaire, Autre_antécédants,
       dossier_medical.Id as dossier, Date_creation, Maladie_traitée, Cabinet
-       FROM Patient  JOIN fiche_medical ON Patient.Id = fiche_medical.Patient JOIN dossier_medical on Patient.id = dossier_medical.Patient WHERE dossier_medical.Cabinet = '${Cab}'`
+       FROM patient  JOIN fiche_medical ON patient.Id = fiche_medical.Patient JOIN dossier_medical on patient.id = dossier_medical.Patient WHERE dossier_medical.Cabinet = '${Cab}'`
       );
 
       resp.status(201).json({
@@ -42,7 +42,6 @@ exports.PatientList = async (req, resp) => {
 exports.PatientNbr = async (req, resp) => {
   let Cab = req.params.id;
   let id = req.user;
-
 
   try {
     if (id !== Cab)
@@ -105,7 +104,7 @@ exports.AddPatient = async (req, resp) => {
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let res = await sqlQuery(
-        `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
+        `SELECT *  FROM account WHERE Login = '${newAccount.login}'`
       );
 
       if (res.length !== 0) {
@@ -119,7 +118,7 @@ exports.AddPatient = async (req, resp) => {
         }
       } else {
         let res = await sqlQuery(
-          `SELECT *  FROM Patient  WHERE Email = '${newPatient.Email}'`
+          `SELECT *  FROM patient  WHERE Email = '${newPatient.Email}'`
         );
 
         if (res.length !== 0) {
@@ -128,7 +127,7 @@ exports.AddPatient = async (req, resp) => {
             .json({ message: "Cet email est déja associé à un autre patient" });
         } else {
           let res = await sqlQuery(
-            `SELECT *  FROM Patient  WHERE CIN = '${newPatient.CIN}'`
+            `SELECT *  FROM patient  WHERE CIN = '${newPatient.CIN}'`
           );
 
           if (res.length !== 0) {
@@ -167,17 +166,17 @@ exports.AddPatient = async (req, resp) => {
             let result = await bcrypt.hash(newAccount.password, 10);
             newAccount.password = result;
 
-            let query = `INSERT INTO Account Set ?`;
-            let query1 = `INSERT INTO Patient Set ?`;
+            let query = `INSERT INTO account Set ?`;
+            let query1 = `INSERT INTO patient Set ?`;
             let query2 = `INSERT INTO fiche_medical Set ?`;
             let query3 = `INSERT INTO dossier_medical Set ?`;
 
             if (sqlQuery(query, newAccount)) {
-              let res = await sqlQuery(`SELECT * FROM Account `);
+              let res = await sqlQuery(`SELECT * FROM account `);
               newPatient.Account = res[res.length - 1].Id;
 
               if (sqlQuery(query1, newPatient)) {
-                let result = await sqlQuery(`SELECT * FROM Patient`);
+                let result = await sqlQuery(`SELECT * FROM patient`);
                 NewDossierMedical.Patient = result[result.length - 1].Id;
                 NewDossierMedical.Cabinet = Cab;
                 newFicheMedical.Patient = result[result.length - 1].Id;
@@ -186,6 +185,7 @@ exports.AddPatient = async (req, resp) => {
                   sqlQuery(query2, newFicheMedical) &&
                   sqlQuery(query3, NewDossierMedical)
                 ) {
+                  console.log("it s done")
                   //SendEmail(userInfo);
                 }
               }
@@ -287,12 +287,11 @@ exports.DeletePatient = async (req, resp) => {
   }
 };
 
-exports.Patient_consultations = async (req, resp) =>{
-
+exports.Patient_consultations = async (req, resp) => {
   let Cab = req.params.idCabinet;
   let Patient = req.params.idPatient;
   let id = req.user;
-  console.log("hello")
+  console.log("hello");
   try {
     if (id !== Cab)
       resp
@@ -300,10 +299,10 @@ exports.Patient_consultations = async (req, resp) =>{
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let List = await sqlQuery(
-        `SELECT * FROM RDV JOIN consultation  on RDV.id = consultation.RDV  join fiche_consultation on consultation.id = fiche_consultation.Consultation WHERE rdv.Cabinet = '${Cab}' and rdv.Patient = '${Patient}' ORDER BY rdv.DATE DESC `
+        `SELECT * FROM rdv JOIN consultation  on rdv.id = consultation.RDV  join fiche_consultation on consultation.id = fiche_consultation.Consultation WHERE rdv.Cabinet = '${Cab}' and rdv.Patient = '${Patient}' ORDER BY rdv.DATE DESC `
       );
 
-      console.log(List)
+      console.log(List);
       resp.status(201).json({
         AllFiches: List,
       });
@@ -311,6 +310,54 @@ exports.Patient_consultations = async (req, resp) =>{
   } catch (err) {
     console.log(err.message);
   }
+};
 
+exports.PatientFiles = async (req, resp) => {
+  
+  const file = req.body.file;
+  const Fiche = req.body.Fiche;
+  const Type = req.body.type;
 
-}
+  try {
+    const patient = await sqlQuery(
+      `select * from Patient where id = '${Fiche.Patient}'`
+    );
+
+    const FileName = `${Fiche.Id} ${Fiche.Date.split("T")[0]}`;
+
+    var path =
+      __dirname +
+      `\\Ressources\\Patients\\${patient[0].Nom} ${patient[0].Prénom}\\${FileName}`;
+
+    fs.access(path, (error) => {
+      if (error) {
+        fs.mkdir(path, (error) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("New Directory created successfully !!");
+          }
+        });
+      }
+    });
+
+    const uptodate = await sqlQuery(
+      `UPDATE  Fiche_consultation Set ${Type} = '${Type}.pdf'  WHERE id = '${Fiche.Id}'`
+    );
+
+    if (uptodate) {
+      const doc = new pdfDocument();
+
+      doc.pipe(fs.createWriteStream(`${path}\\${Type}.pdf`));
+
+      doc.fontSize(27).text(file, 100, 100);
+
+      doc.end();
+     
+    } else {
+      resp.send("un probleme est survenu");
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
+};

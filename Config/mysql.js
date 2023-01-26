@@ -3,10 +3,10 @@ const mysql = require("mysql");
 //create mysql connection
 const CNX = mysql.createConnection({
        
-    host : 'localhost',
-    user : 'root',
-    password : '',
-    database : 'doccare'
+    host : 'sql8.freesqldatabase.com',
+    user : 'sql8592743', 
+    password : 'nGCG5BNrUp',
+    database : 'sql8592743'
 
 })
 
@@ -19,3 +19,4 @@ console.log("my sql is runing")
 })
 
 exports.DB = CNX;
+
