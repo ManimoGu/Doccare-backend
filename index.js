@@ -66,7 +66,7 @@ app.listen("9000", (req, resp) => {
 
   // Doctors API 
 
-  app.get("/api/Doctor/DoctorProfil/:login/password/:password", DoctorProfil);
+  app.post("/api/Doctor/DoctorProfil/:login/password/:password", DoctorProfil);
 
   app.get("/api/Doctor/AddDoctor/:cabinet",Access, AddDoctor);
 
