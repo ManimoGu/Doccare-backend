@@ -36,7 +36,8 @@ app.listen("9000", (req, resp) => {
   app.use(bodyparser.json())
 
   app.use(cors({
-    origin : '*',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
     "preflightContinue": false,
     "optionsSuccessStatus": 204
