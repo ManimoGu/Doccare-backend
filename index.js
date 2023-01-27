@@ -25,7 +25,7 @@ app.use(express.json())
 
 //enable Listening http server
 
-const port = process.env.port || 9000
+const port = process.env.PORT || 9000
 
 app.listen(port, (req, resp) => {
     console.log("Server is runing on port 9000..." + __dirname);
