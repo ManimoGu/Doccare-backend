@@ -36,10 +36,7 @@ app.listen(port, (req, resp) => {
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
 
-  app.use(cors({
-      origin : "https://doccare-frontend.vercel.app/"
-   
-  }))
+  app.use(cors())
 
   app.use(express.static('API'))
 
