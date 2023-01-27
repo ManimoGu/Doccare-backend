@@ -37,9 +37,7 @@ app.listen(port, (req, resp) => {
   app.use(bodyparser.json())
 
   app.use(cors({
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Credentials': true,
-    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+      origin : "https://doccare-frontend.vercel.app/"
    
   }))
 
