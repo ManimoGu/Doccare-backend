@@ -37,7 +37,10 @@
         "headers": [
           {
             "key": "x-authorized",
-            "value": "true"
+            "value": "true",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": true
+
           }
         ]
       }
