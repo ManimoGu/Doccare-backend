@@ -4,7 +4,6 @@ const express = require("express")
 const cors = require("cors")
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, UploadFile} = require("./API/auth");
-const { API_URL } = require("./config/api");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList, UpdateAvatarDocteur } = require("./API/doctor");
 const { AddAssistante, DeleteAssistante, UpdateAssistante, AssistanteList, UpdateAvatarAssistante } = require("./API/Assistante");
 const { PatientNbr, PatientList, AddPatient, UpdatePatient, DeletePatient, Patient_consultations, PatientFiles } = require("./API/Patient");
@@ -26,7 +25,9 @@ app.use(express.json())
 
 //enable Listening http server
 
-app.listen("9000", (req, resp) => {
+const port = process.env.port || 9000
+
+app.listen(port, (req, resp) => {
     console.log("Server is runing on port 9000..." + __dirname);
   });
 
@@ -39,8 +40,7 @@ app.listen("9000", (req, resp) => {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
-    "preflightContinue": false,
-    "optionsSuccessStatus": 204
+   
   }))
 
   app.use(express.static('API'))
