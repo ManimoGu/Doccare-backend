@@ -7,7 +7,7 @@
   "build" : 
     {
 
-      "use" : "@vercel/node"
+     
     }
   ,
   "routes" : [
