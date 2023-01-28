@@ -1,9 +1,9 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 
-const { Account } = require("../models/Account");
-const { Assistante } = require("../models/Assistante");
-const { Email } = require("../models/Email");
+const { Account } = require("../moduls/Account");
+const { Assistante } = require("../moduls/Assistante");
+const { Email } = require("../moduls/Email");
 const bcrypt = require("bcrypt");
 
 

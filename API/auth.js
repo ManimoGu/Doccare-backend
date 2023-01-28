@@ -1,11 +1,11 @@
 
-const { Doctor } = require("../models/Doctor");
-const { Cabinet } = require("../models/Cabinet");
-const { Account } = require("../models/Account");
+const { Doctor } = require("../moduls/Doctor");
+const { Cabinet } = require("../moduls/Cabinet");
+const { Account } = require("../moduls/Account");
 const { SendEmail } = require("../Helpers/Sendemail");
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
-const { Email } = require("../models/Email");
+const { Email } = require("../moduls/Email");
 const bcrypt = require("bcrypt");
 const { validationRegister } = require("../Helpers/validation");
 const fs = require("fs");
