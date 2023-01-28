@@ -1,4 +1,4 @@
-const { DB } = require("../config/mysql");
+const { DB } = require("../Config/mysql");
 
 exports.sqlQuery = (sql,insertedData=null) => new Promise((resolve, reject) => {
 
