@@ -1,4 +1,4 @@
-const { mailgun } = require("../Config/email");
+
 const { Doctor } = require("../models/Doctor");
 const { Cabinet } = require("../models/Cabinet");
 const { Account } = require("../models/Account");
