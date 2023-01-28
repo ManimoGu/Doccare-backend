@@ -1,11 +1,11 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
-const { Patient } = require("../Models/Patient");
-const { fiche_medical } = require("../Models/Fiche_Medical");
+const { Patient } = require("../models/Patient");
+const { fiche_medical } = require("../models/Fiche_Medical");
 const { Account } = require("../models/Account");
-const { dossier_medical } = require("../Models/Dossier_medical");
+const { dossier_medical } = require("../models/Dossier_medical");
 const bcrypt = require("bcrypt");
-const { Email } = require("../Models/Email");
+const { Email } = require("../models/Email");
 const pdfDocument = require("pdfkit");
 const fs = require("fs");
 

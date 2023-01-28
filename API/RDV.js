@@ -1,7 +1,7 @@
 const { sqlQuery } = require("../Helpers/Promise");
-const { RDV } = require("../Models/RDV");
-const { Consultation } = require("../Models/Consultation");
-const { FicheConsultation } = require("../Models/FicheConsultation");
+const { RDV } = require("../models/RDV");
+const { Consultation } = require("../models/Consultation");
+const { FicheConsultation } = require("../models/FicheConsultation");
 
 exports.ADDRDV = async (req, resp) => {
   let Cab = req.params.id;
