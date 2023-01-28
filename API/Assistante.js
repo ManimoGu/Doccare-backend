@@ -1,12 +1,11 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
-const { Doctor } = require("../models/Doctor");
-const { Cabinet } = require("../models/Cabinet");
+
 const { Account } = require("../models/Account");
 const { Assistante } = require("../models/Assistante");
 const { Email } = require("../models/Email");
 const bcrypt = require("bcrypt");
-const { SendEmail } = require("../Helpers/Sendemail");
+
 
 exports.AssistanteList = async (req, resp) => {
   let Cab = req.params.id;
