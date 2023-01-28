@@ -43,6 +43,13 @@ app.listen(port, (req, resp) => {
   app.use(express.static('API'))
 
 
+  app.get("/",(req,res)=>{
+
+    res.send("hello")
+
+  })
+
+
   // Signin API
 
   app.post("/api/auth/register", register);
