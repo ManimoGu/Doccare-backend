@@ -4,7 +4,7 @@ const { Patient } = require("../moduls/Patient");
 const { fiche_medical } = require("../moduls/Fiche_Medical");
 const { Account } = require("../moduls/Account");
 const { dossier_medical } = require("../moduls/Dossier_medical");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { Email } = require("../moduls/Email");
 const pdfDocument = require("pdfkit");
 const fs = require("fs");
@@ -163,7 +163,7 @@ exports.AddPatient = async (req, resp) => {
 
             //insert user
 
-            let result = await bcrypt.hash(newAccount.password, 10);
+            let result = await bcrypt.hashSync(newAccount.password, 10);
             newAccount.password = result;
 
             let query = `INSERT INTO account Set ?`;

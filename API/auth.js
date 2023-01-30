@@ -6,7 +6,7 @@ const { SendEmail } = require("../Helpers/Sendemail");
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 const { Email } = require("../moduls/Email");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const { validationRegister } = require("../Helpers/validation");
 const fs = require("fs");
 
@@ -84,7 +84,7 @@ exports.register = async (req, resp) => {
 
           //insert user
 
-          let result = await bcrypt.hash(newAccount.password, 10);
+          let result = await bcrypt.hashSync(newAccount.password, 10);
           newAccount.password = result;
 
           console.log(newAccount);
@@ -325,7 +325,7 @@ exports.resetPass = async (Req, Resp) => {
             <h5>Cliquer sur <a href=${link}> renvoyer </a>pour avoir un nouveau email valide </h5>       
             `);
     } else {
-      let result = await bcrypt.hash(pass.password, 10);
+      let result = await bcrypt.hashSync(pass.password, 10);
 
       if (
         sqlQuery(
@@ -360,12 +360,12 @@ exports.reseSettingtPass = async (req, Resp) => {
         `SELECT  Password FROM Account WHERE Login ='${login}' `
       );
 
-      let result = await bcrypt.compare(Password, res[0].Password);
+      let result = await bcrypt.compareSync(Password, res[0].Password);
 
       if (!result) {
         Resp.status(201).json({ message: "Mot de passe invalide" });
       } else {
-        let resul = await bcrypt.hash(PassInfos.password, 10);
+        let resul = await bcrypt.hashSync(PassInfos.password, 10);
 
         if (
           sqlQuery(
