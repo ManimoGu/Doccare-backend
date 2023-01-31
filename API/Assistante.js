@@ -103,7 +103,7 @@ exports.AddAssistante = async (req, resp) => {
 
         //insert user
 
-        let result = await bcrypt.hashSync(newAccount.password, 10);
+        let result = await bcrypt.hash(newAccount.password, 10);
         newAccount.password = result;
 
         let query = `INSERT INTO Account Set ?`;

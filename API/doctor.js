@@ -20,7 +20,7 @@ exports.DoctorProfil = async (req, Resp) => {
         message: "Nom d'utilisateur introuvables",
       });
     } else {
-      let result = await bcrypt.compareSync(pass, res[0].Password);
+      let result = await bcrypt.compare(pass, res[0].Password);
       console.log(result);
       if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
       else {
@@ -148,7 +148,7 @@ exports.AddDoctor = async (req, resp) => {
 
           //insert user
 
-          let result = await bcrypt.hashSync(newAccount.password, 10);
+          let result = await bcrypt.Sync(newAccount.password, 10);
           newAccount.password = result;
 
           console.log(newAccount);
