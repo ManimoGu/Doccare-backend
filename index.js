@@ -11,8 +11,7 @@ const { ReviewsNbr, ListMessage, AddResp, getResponse } = require("./API/Reviews
 const { ConsultationNbr, ConsultationTotal, DashList, ConsultationList, UpdateConsultation } = require("./API/Consultations");
 const { ADDRDV, RDVList, DeleteRDV, UpdateRDV, RDVNbr, TypeUpdate} = require("./API/RDV");
 const fileupload = require("express-fileupload");
-const path = require('path')
-const JWT = require("jsonwebtoken");
+
 const { Access } = require("./Helpers/JwtVerification");
 //create an app 
 
@@ -38,9 +37,7 @@ app.listen(port, (req, resp) => {
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
 
-  app.use(cors({
-    origin : "*"
-  }))
+  app.use(cors())
 
   app.use(express.static('API'))
 
