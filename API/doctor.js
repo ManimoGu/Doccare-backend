@@ -1,8 +1,8 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
-const { Doctor } = require("../moduls/Doctor");
-const { Cabinet } = require("../moduls/Cabinet");
-const { Account } = require("../moduls/Account");
+const { Doctor } = require("../models/Doctor");
+const { Cabinet } = require("../models/Cabinet");
+const { Account } = require("../models/Account");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { Access } = require("../Helpers/JwtVerification");

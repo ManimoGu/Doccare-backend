@@ -1,6 +1,6 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
-const { Response } = require("../moduls/Response");
+const { Response } = require("../models/Response");
 
 exports.ReviewsNbr = async (req, resp) => {
   let Cab = req.params.id;
