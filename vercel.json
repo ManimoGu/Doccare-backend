@@ -3,14 +3,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "index.js",
+      "src": "./index.js",
       "use": "@now/node"
     }
   ],
  
   "headers": [
     {
-      "source": "/API/(.*)",
+      "source": "/(.*)",
       "headers": [
         { "key": "Access-Control-Allow-Credentials", "value": "true" },
         { "key": "Access-Control-Allow-Origin", "value": "*" },
