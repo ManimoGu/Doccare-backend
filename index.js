@@ -37,7 +37,14 @@ app.listen(port, (req, resp) => {
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
 
-  app.use(cors())
+  const corsOptions = {
+    origin: '*',
+    optionsSuccessStatus: 200,
+    credentials: true
+    
+}
+
+  app.use(cors(corsOptions))
 
   app.use(express.static('API'))
 
