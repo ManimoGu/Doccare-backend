@@ -265,9 +265,11 @@ exports.forgot = async (Req, res) => {
       //create the redirected link to the frontend page
       let endpoint = `http://localhost:3000/Resetpassword/${login}/code/${token}`;
 
+
+  
       // Get the email from the database
       let mail = await sqlQuery(
-        `Select Email from ${res[0].Fonction} where Account = ${res[0].Id}`
+        `Select Email from ${resp[0].Fonction} where Account = ${resp[0].Id}`
       );
 
       //send the mail
