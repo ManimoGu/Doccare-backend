@@ -3,10 +3,10 @@ const mysql = require("mysql");
 //create mysql connection
 const CNX = mysql.createConnection({
        
-    host : 'sql8.freesqldatabase.com',
-    user : 'sql8592743', 
-    password : 'nGCG5BNrUp',
-    database : 'sql8592743'
+    host : 'tabibcom.c3e95rou1qgl.us-east-1.rds.amazonaws.com',
+    user : 'admin', 
+    password : 'amouna**91',
+    database : 'doccare'
 
 })
 
