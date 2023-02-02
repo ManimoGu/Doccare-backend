@@ -7,22 +7,22 @@ const { Email } = require("../models/Email");
 const bcrypt = require("bcryptjs");
 
 
-exports.AssistanteList = async (req, resp) => {
+exports.AssistanteList = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT * FROM assistante Where Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
-        ListAssistante: res,
+      res.status(201).json({
+        ListAssistante: resp,
       });
     }
   } catch (err) {
@@ -30,7 +30,7 @@ exports.AssistanteList = async (req, resp) => {
   }
 };
 
-exports.AddAssistante = async (req, resp) => {
+exports.AddAssistante = async (req, res) => {
   let Cab = req.params.cabinet;
   let id = req.user;
 
@@ -55,19 +55,19 @@ exports.AddAssistante = async (req, resp) => {
   else {*/
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
       );
 
-      if (res.length !== 0) {
-        if (res[0].ISVERIFIED) {
-          resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
-        } else if (!res[0].ISVERIFIED) {
-          resp.status(201).json({
+      if (resp.length !== 0) {
+        if (resp[0].ISVERIFIED) {
+          res.status(201).json({ message: "Nom d'utilisateur déja existant" });
+        } else if (!resp[0].ISVERIFIED) {
+          res.status(201).json({
             message:
               "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
           });
@@ -110,9 +110,9 @@ exports.AddAssistante = async (req, resp) => {
         let query2 = `INSERT INTO Assistante Set ?`;
 
         if (sqlQuery(query, newAccount)) {
-          let res = await sqlQuery(`SELECT * FROM Account `);
+          let resp = await sqlQuery(`SELECT * FROM Account `);
 
-          newAssistance.Account = res[res.length - 1].Id;
+          newAssistance.Account = resp[res.length - 1].Id;
 
           if (sqlQuery(query2, newAssistance)) {
             // SendEmail(userInfo);
@@ -125,24 +125,24 @@ exports.AddAssistante = async (req, resp) => {
   }
 };
 
-exports.DeleteAssistante = async (req, resp) => {
+exports.DeleteAssistante = async (req, res) => {
   let IdAssistante = req.params.id;
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT Account  FROM Assistante WHERE Id = '${IdAssistante}'`
       );
 
       if (sqlQuery(`DELETE FROM Assistante WHERE Id ='${IdAssistante}'`)) {
-        if (sqlQuery(`DELETE FROM Account WHERE Id ='${res[0].Account}'`)) {
-          resp
+        if (sqlQuery(`DELETE FROM Account WHERE Id ='${resp[0].Account}'`)) {
+          res
             .status(201)
             .json({ message: "Le docteur a été supprimer avec succés" });
         }
@@ -153,7 +153,7 @@ exports.DeleteAssistante = async (req, resp) => {
   }
 };
 
-exports.UpdateAssistante = async (req, resp) => {
+exports.UpdateAssistante = async (req, res) => {
   let IdAssistante = req.params.id;
   let id = req.user;
   let Cab = req.ID;
@@ -174,14 +174,14 @@ exports.UpdateAssistante = async (req, resp) => {
   try {
     if (id !== Cab)
   
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query = `UPDATE  Assistante Set ? WHERE id = '${IdAssistante}'`;
 
       if (sqlQuery(query, newAssistance)) {
-        resp
+        res
           .status(201)
           .json({ message: "Les informations ont été modifier avec succés" });
       }
@@ -191,7 +191,7 @@ exports.UpdateAssistante = async (req, resp) => {
   }
 };
 
-exports.UpdateAvatarAssistante = async (req, resp) => {
+exports.UpdateAvatarAssistante = async (req, res) => {
   let IdAssistante = req.params.id;
   let Avatar = req.body.file;
   let id = req.user;
@@ -199,14 +199,14 @@ exports.UpdateAvatarAssistante = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query = `UPDATE  Assistante Set Avatar = '${Avatar}'  WHERE id = '${IdAssistante}'`;
 
       if (sqlQuery(query)) {
-        resp
+        res
           .status(201)
           .json({ message: "Votre photo a été changer avec succés" });
       }

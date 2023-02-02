@@ -10,7 +10,7 @@ const bcrypt = require("bcryptjs");
 const { validationRegister } = require("../Helpers/validation");
 const fs = require("fs");
 
-exports.register = async (req, resp) => {
+exports.register = async (req, res) => {
   //fetch data
   let newDoctor = new Doctor(
     req.body.Nom,
@@ -28,33 +28,33 @@ exports.register = async (req, resp) => {
   //validation des données
 
   if (validationRegister(newDoctor, newAccount, newCabinet))
-    resp
+    res
       .status(403)
       .json({ message: validationRegister(newDoctor, newAccount, newCabinet) });
   else {
     try {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT *  FROM Account WHERE Login = '${newAccount.login}'`
       );
 
-      console.log(res);
+      console.log(resp);
 
-      if (res.length !== 0) {
-        if (res[0].ISVERIFIED) {
-          resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
-        } else if (!res[0].ISVERIFIED) {
-          resp.status(201).json({
+      if (resp.length !== 0) {
+        if (resp[0].ISVERIFIED) {
+          res.status(201).json({ message: "Nom d'utilisateur déja existant" });
+        } else if (!resp[0].ISVERIFIED) {
+          res.status(201).json({
             message:
               "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
           });
         }
       } else {
-        let res = await sqlQuery(
+        let resp = await sqlQuery(
           `SELECT *  FROM cabinet  WHERE Email = '${newCabinet.email}'`
         );
 
-        if (res.length !== 0) {
-          resp
+        if (resp.length !== 0) {
+          res
             .status(201)
             .json({ message: "Cet email est déja associé à un autre cabinet" });
         } else {
@@ -96,11 +96,11 @@ exports.register = async (req, resp) => {
           //let res = await sqlQuery(query, newAccount);
 
           if (sqlQuery(query, newAccount) && sqlQuery(query1, newCabinet)) {
-            let res = await sqlQuery(`SELECT * FROM Account `);
+            let resp = await sqlQuery(`SELECT * FROM Account `);
             let result = await sqlQuery(`SELECT * FROM Cabinet `);
 
             newDoctor.Cabinet = result[result.length - 1].Id;
-            newDoctor.Account = res[res.length - 1].Id;
+            newDoctor.Account = resp[resp.length - 1].Id;
             console.log(newDoctor);
 
             if (sqlQuery(query2, newDoctor)) {
@@ -114,26 +114,26 @@ exports.register = async (req, resp) => {
       }
     } catch (err) {
       console.log(err.message);
-      resp.send(err.message);
+      res.send(err.message);
     }
   }
 };
 
-exports.verify = async (Req, Resp) => {
+exports.verify = async (Req, res) => {
   let login = Req.params.login;
   let Token = Req.params.token;
 
-  let res = await sqlQuery(
+  let resp = await sqlQuery(
     `SELECT  ExpirationDat FROM Account WHERE Login ='${login}' and Token='${Token}' `
   );
 
-  if (res.length === 0) {
-    Resp.status(201).json({ message: "Token ou nom d'utilisateur invalides" });
+  if (resp.length === 0) {
+    res.status(201).json({ message: "Token ou nom d'utilisateur invalides" });
   } else {
-    if (Date.now() > res[0].ExpirationDat) {
+    if (Date.now() > resp[0].ExpirationDat) {
       let link = `http://localhost:9000/api/resend/${login}/code/${Token}`;
 
-      Resp.send(`
+      res.send(`
              
              <h1>Ce lien a déja expiré</h1>
              <h5>Cliquez sur <a href= ${link}> renvoyer </a>pour avoir un nouveau lien valide </h5>       
@@ -143,7 +143,7 @@ exports.verify = async (Req, Resp) => {
         `UPDATE Account SET Isverified = "1" , Token = "" WHERE Login ='${login}'`
       );
 
-      Resp.send(`
+      res.send(`
           
              <h1>Votre compte a été vérifier avec succés</h1>
              <a href= "http://localhost:3000/Signin">se connceter</a>
@@ -153,16 +153,16 @@ exports.verify = async (Req, Resp) => {
   }
 };
 
-exports.resend = async (Req, Resp) => {
+exports.resend = async (Req, res) => {
   let login = Req.params.login;
   let Token = Req.params.token;
 
-  let res = await sqlQuery(
+  let resp = await sqlQuery(
     `SELECT  id, ExpirationDat, Fonction FROM Account WHERE Login ='${login}' and Token='${Token}' `
   );
 
-  if (res.length === 0) {
-    Resp.send("<h1>ce compte existe déja</h1>");
+  if (resp.length === 0) {
+    res.send("<h1>ce compte existe déja</h1>");
   } else {
     let date = new Date(Date.now() + 24 * 60 * 60 * 1000)
       .toISOString()
@@ -178,16 +178,16 @@ exports.resend = async (Req, Resp) => {
     let email = "";
     let fonction = "";
 
-    if (res[0].Fonction === "Docteur") {
+    if (resp[0].Fonction === "Docteur") {
       fonction = "Docteur";
-    } else if (res[0].Fonction === "Assistante") {
+    } else if (resp[0].Fonction === "Assistante") {
       fonction = "Assistante";
     } else {
       fonction = "Patient";
     }
 
     let mail = await sqlQuery(
-      `Select Email from ${fonction} where Account = ${res[0].Id}`
+      `Select Email from ${fonction} where Account = ${resp[0].Id}`
     );
 
     //send the mail
@@ -211,48 +211,48 @@ exports.resend = async (Req, Resp) => {
     ) {
       SendEmail(userInfo);
 
-      Resp.send("<h1> Vérifier votre email pour valider votre compte </h1>");
+      res.send("<h1> Vérifier votre email pour valider votre compte </h1>");
     }
   }
 };
 
-exports.Signin = async (Req, Resp) => {
+exports.Signin = async (Req, res) => {
   let login = Req.params.login;
   let pass = Req.params.password;
 
-  let res = await sqlQuery(` Select * from Account where Login = '${login}'`);
+  let resp = await sqlQuery(` Select * from Account where Login = '${login}'`);
 
-  if (res.length === 0) {
-    Resp.status(201).json({ message: "Nom d'utilisqteur invalide" });
+  if (resp.length === 0) {
+    res.status(201).json({ message: "Nom d'utilisqteur invalide" });
   } else {
     console.log("hello");
-    bcrypt.compare(pass, res[0].Password, (err, result) => {
-      if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
+    bcrypt.compare(pass, resp[0].Password, (err, result) => {
+      if (!result) res.status(201).json({ message: "Mot de passe incorrect" });
       else {
-        Resp.status(201).json({ message: "Vous êtes connecté" });
+        res.status(201).json({ message: "Vous êtes connecté" });
       }
     });
   }
 };
 
-exports.forgot = async (Req, Resp) => {
+exports.forgot = async (Req, res) => {
   // get the login from the url defined in the frontend
   let login = Req.params.login;
 
-  let res = await sqlQuery(
+  let resp = await sqlQuery(
     `SELECT Id, Fonction, Isverified FROM Account WHERE Login ='${login}'`
   );
 
-  console.log(res);
+  console.log(resp);
   //verify if the login exist in teh data base
 
-  if (res.length === 0) {
-    Resp.status(201).json({ message: "Nom d'utilisateur introuvable" });
+  if (resp.length === 0) {
+    res.status(201).json({ message: "Nom d'utilisateur introuvable" });
   } else {
     // See if the account is verified or not
-    console.log(res[0].Isverified);
-    if (!res[0].Isverified) {
-      Resp.status(201).json({
+    console.log(resp[0].Isverified);
+    if (!resp[0].Isverified) {
+      res.status(201).json({
         message: "Vous n'avez pas encore vérifier votre compte",
       });
     } else {
@@ -291,7 +291,7 @@ exports.forgot = async (Req, Resp) => {
       ) {
         SendEmail(userinfo);
 
-        Resp.send(`
+        res.send(`
            
            <h1> Merci de vérifier votre email  </h1>
            
@@ -301,7 +301,7 @@ exports.forgot = async (Req, Resp) => {
   }
 };
 
-exports.resetPass = async (Req, Resp) => {
+exports.resetPass = async (Req, res) => {
   let login = Req.params.login;
   let Token = Req.params.token ? Req.params.token : "";
 
@@ -309,17 +309,17 @@ exports.resetPass = async (Req, Resp) => {
 
   console.log(pass);
 
-  let res = await sqlQuery(
+  let resp = await sqlQuery(
     `SELECT  ExpirationDat FROM Account WHERE Login ='${login}' and TOKEN='${Token}' `
   );
 
-  if (res.length === 0) {
-    Resp.status(201).json({ message: "Token Invalid " });
+  if (resp.length === 0) {
+    res.status(201).json({ message: "Token Invalid " });
   } else {
-    if (res[0].ExpirationDat < Date.now()) {
+    if (resp[0].ExpirationDat < Date.now()) {
       let link = `http://localhost:9000/api/resend/${login}/code/${Token}`;
 
-      Resp.send(`
+      res.send(`
            
             <h1>Ce lien est déja expiré</h1>
             <h5>Cliquer sur <a href=${link}> renvoyer </a>pour avoir un nouveau email valide </h5>       
@@ -332,7 +332,7 @@ exports.resetPass = async (Req, Resp) => {
           `UPDATE Account SET Password = '${result}' WHERE Login ='${login}'`
         )
       )
-        Resp.send(`
+        res.send(`
            
           <h1> Votre mot de passe a été changer avec succés </h1>
           <a href= "http://localhost:3000/Login">Connectez vous</a>
@@ -342,7 +342,7 @@ exports.resetPass = async (Req, Resp) => {
   }
 };
 
-exports.reseSettingtPass = async (req, Resp) => {
+exports.reseSettingtPass = async (req, res) => {
   let login = req.params.login;
   let Password = req.params.password;
   let id = req.user;
@@ -352,18 +352,18 @@ exports.reseSettingtPass = async (req, Resp) => {
 
   try {
     if (id !== Cab)
-      Resp.status(201).json({
+      res.status(201).json({
         message: "Vous ne pouvez effectuer cette operation",
       });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT  Password FROM Account WHERE Login ='${login}' `
       );
 
-      let result = await bcrypt.compareSync(Password, res[0].Password);
+      let result = await bcrypt.compareSync(Password, resp[0].Password);
 
       if (!result) {
-        Resp.status(201).json({ message: "Mot de passe invalide" });
+        res.status(201).json({ message: "Mot de passe invalide" });
       } else {
         let resul = await bcrypt.hash(PassInfos.password, 10);
 
@@ -372,7 +372,7 @@ exports.reseSettingtPass = async (req, Resp) => {
             `UPDATE Account SET Password = '${resul}' WHERE Login ='${login}'`
           )
         )
-          Resp.send(`
+          res.send(`
            
           <h1> Votre mot de passe a été changer avec succés </h1>
           <a href= "http://localhost:3000/Login">Connectez vous</a>
@@ -385,7 +385,7 @@ exports.reseSettingtPass = async (req, Resp) => {
   }
 };
 
-exports.UploadFile = async (Req, Resp) => {
+exports.UploadFile = async (Req, res) => {
   let file = Req.files.image;
   let fileName = file.name;
   let id = Req.user;
@@ -397,11 +397,11 @@ exports.UploadFile = async (Req, Resp) => {
    
   try {
     if (id !== Cab)
-      Resp.status(201).json({
+      res.status(201).json({
         message: "Vous ne pouvez effectuer cette operation",
       });
     else {
-      if (!Req.files === null) return Resp.status(400).send("No files");
+      if (!Req.files === null) return res.status(400).send("No files");
 
       // use mv() to store pic on the server
 
@@ -427,10 +427,10 @@ exports.UploadFile = async (Req, Resp) => {
 
       file.mv(`${path}/${fileName}`, (err) => {
         if (err) {
-          return Resp.status(500).send(err);
+          return res.status(500).send(err);
         }
 
-        Resp.json({ fileName: fileName, filePath: `${path}\\{${fileName}` });
+        res.json({ fileName: fileName, filePath: `${path}\\{${fileName}` });
       });
     }
     //if (Resp) Resp.status(200).send("File uploaded");

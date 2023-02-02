@@ -9,19 +9,19 @@ const { Email } = require("../models/Email");
 const pdfDocument = require("pdfkit");
 const fs = require("fs");
 
-exports.PatientDash = async (req, resp) => {};
+exports.PatientDash = async (req, res) => {};
 
-exports.PatientList = async (req, resp) => {
+exports.PatientList = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT 
       patient.Id as IdPatient, Nom, Prénom, Civilité, CIN, Date_naissance, Tel , Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account,
       fiche_medical.Id as Fiche, Poids, Taille, Maladie_chronique, Groupe_sanguin, Maladie_infectueuse, Allergie, Habitude_toxique, Chirurgie_antérieure, Maladie_héréditaire, Autre_antécédants,
@@ -30,7 +30,7 @@ exports.PatientList = async (req, resp) => {
       );
 
       resp.status(201).json({
-        ListPatient: res,
+        ListPatient: resp,
         dir: __dirname,
       });
     }
@@ -39,22 +39,22 @@ exports.PatientList = async (req, resp) => {
   }
 };
 
-exports.PatientNbr = async (req, resp) => {
+exports.PatientNbr = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT count(Patient) as nbr FROM dossier_medical WHERE Cabinet = '${Cab}' `
       );
 
-      resp.status(201).json({
-        NbrPatient: res[0].nbr,
+      res.status(201).json({
+        NbrPatient: resp[0].nbr,
       });
     }
   } catch (err) {
@@ -62,7 +62,7 @@ exports.PatientNbr = async (req, resp) => {
   }
 };
 
-exports.AddPatient = async (req, resp) => {
+exports.AddPatient = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
@@ -99,39 +99,39 @@ exports.AddPatient = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT *  FROM account WHERE Login = '${newAccount.login}'`
       );
 
-      if (res.length !== 0) {
-        if (res[0].ISVERIFIED) {
-          resp.status(201).json({ message: "Nom d'utilisateur déja existant" });
-        } else if (!res[0].ISVERIFIED) {
-          resp.status(201).json({
+      if (resp.length !== 0) {
+        if (resp[0].ISVERIFIED) {
+          res.status(201).json({ message: "Nom d'utilisateur déja existant" });
+        } else if (!resp[0].ISVERIFIED) {
+          res.status(201).json({
             message:
               "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
           });
         }
       } else {
-        let res = await sqlQuery(
+        let resp = await sqlQuery(
           `SELECT *  FROM patient  WHERE Email = '${newPatient.Email}'`
         );
 
-        if (res.length !== 0) {
-          resp
+        if (resp.length !== 0) {
+          res
             .status(201)
             .json({ message: "Cet email est déja associé à un autre patient" });
         } else {
-          let res = await sqlQuery(
+          let resp = await sqlQuery(
             `SELECT *  FROM patient  WHERE CIN = '${newPatient.CIN}'`
           );
 
-          if (res.length !== 0) {
-            resp
+          if (resp.length !== 0) {
+            res
               .status(201)
               .json({ message: "Ce CIN est déja associé à un autre patient" });
           } else {
@@ -173,7 +173,7 @@ exports.AddPatient = async (req, resp) => {
 
             if (sqlQuery(query, newAccount)) {
               let res = await sqlQuery(`SELECT * FROM account `);
-              newPatient.Account = res[res.length - 1].Id;
+              newPatient.Account = resp[resp.length - 1].Id;
 
               if (sqlQuery(query1, newPatient)) {
                 let result = await sqlQuery(`SELECT * FROM patient`);
@@ -199,14 +199,14 @@ exports.AddPatient = async (req, resp) => {
   }
 };
 
-exports.UpdatePatient = async (req, resp) => {
+exports.UpdatePatient = async (req, res) => {
   let pat = req.params.id;
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -224,11 +224,11 @@ exports.UpdatePatient = async (req, resp) => {
         req.body.Avatar
       );
 
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT Account FROM Patient Where id = '${pat}'`
       );
-      console.log(res);
-      newPatient.Account = res[0].Account;
+      console.log(resp);
+      newPatient.Account = resp[0].Account;
 
       const newFicheMedical = new fiche_medical(
         req.body.Poids,
@@ -256,7 +256,7 @@ exports.UpdatePatient = async (req, resp) => {
   }
 };
 
-exports.DeletePatient = async (req, resp) => {
+exports.DeletePatient = async (req, res) => {
   let pat = req.params.id;
   let Account = req.params.Account;
   let id = req.user;
@@ -264,22 +264,22 @@ exports.DeletePatient = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT * FROM rdv JOIN consultation ON rdv.id = consultation.RDV WHERE rdv.Patient = '${pat}'`
       );
 
-      if (res.length !== 0) {
-        resp.status(201).json({
+      if (resp.length !== 0) {
+        res.status(201).json({
           message:
             "Ce patient a deja un dossier medical remplie vous ne pouvez pas le supprimer",
         });
       } else {
         if (sqlQuery(`DELETE FROM account WHERE Id = '${Account}'`))
-          resp.status(201).json({ message: "Ce patient a été supprimé" });
+          res.status(201).json({ message: "Ce patient a été supprimé" });
       }
     }
   } catch {
@@ -287,14 +287,14 @@ exports.DeletePatient = async (req, resp) => {
   }
 };
 
-exports.Patient_consultations = async (req, resp) => {
+exports.Patient_consultations = async (req, res) => {
   let Cab = req.params.idCabinet;
   let Patient = req.params.idPatient;
   let id = req.user;
   console.log("hello");
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -303,7 +303,7 @@ exports.Patient_consultations = async (req, resp) => {
       );
 
       console.log(List);
-      resp.status(201).json({
+      res.status(201).json({
         AllFiches: List,
       });
     }
@@ -312,7 +312,7 @@ exports.Patient_consultations = async (req, resp) => {
   }
 };
 
-exports.PatientFiles = async (req, resp) => {
+exports.PatientFiles = async (req, res) => {
   
   const file = req.body.file;
   const Fiche = req.body.Fiche;
@@ -355,7 +355,7 @@ exports.PatientFiles = async (req, resp) => {
       doc.end();
      
     } else {
-      resp.send("un probleme est survenu");
+      res.send("un probleme est survenu");
     }
   } catch (err) {
     console.log(err.message);

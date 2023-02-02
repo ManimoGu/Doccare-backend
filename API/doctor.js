@@ -9,24 +9,24 @@ const { Access } = require("../Helpers/JwtVerification");
 
 require("dotenv").config();
 
-exports.DoctorProfil = async (req, Resp) => {
+exports.DoctorProfil = async (req, res) => {
   let login = req.params.login;
   let pass = req.params.password;
 
   try {
-    let res = await sqlQuery(`SELECT  * FROM account WHERE Login ='${login}' `);
-    if (res.length === 0) {
-      Resp.status(201).json({
+    let resp = await sqlQuery(`SELECT  * FROM account WHERE Login ='${login}' `);
+    if (resp.length === 0) {
+      res.status(201).json({
         message: "Nom d'utilisateur introuvables",
       });
     } else {
-      let result = await bcrypt.compare(pass, res[0].Password);
+      let result = await bcrypt.compare(pass, resp[0].Password);
       console.log(result);
-      if (!result) Resp.status(201).json({ message: "Mot de passe incorrect" });
+      if (!result) res.status(201).json({ message: "Mot de passe incorrect" });
       else {
-        if (res[0].Fonction === "Docteur") {
+        if (resp[0].Fonction === "Docteur") {
           let DoctorInfo = await sqlQuery(
-            `SELECT  * FROM docteur WHERE Account ='${res[0].Id}' `
+            `SELECT  * FROM docteur WHERE Account ='${resp[0].Id}' `
           );
 
           let CabinetInfo = await sqlQuery(
@@ -34,21 +34,21 @@ exports.DoctorProfil = async (req, Resp) => {
           );
 
           if (DoctorInfo.length === 0 && CabinetInfo.length === 0)
-            Resp.status(201).json({ message: "Compte introuvable" });
+            res.status(201).json({ message: "Compte introuvable" });
           else {
             let ACCESS = jwt.sign(CabinetInfo[0].Id, process.env.ACCESS_TOKEN);
-            Resp.status(201).json({
+            res.status(201).json({
               infos: {
                 Doctor: DoctorInfo[0],
-                AccountInfo: res[0],
+                AccountInfo: resp[0],
                 CabinetInfos: CabinetInfo[0],
                 Token: ACCESS,
               },
             });
           }
-        } else if (res[0].Fonction === "Assistante") {
+        } else if (resp[0].Fonction === "Assistante") {
           let AssistanteInfo = await sqlQuery(
-            `SELECT  * FROM  assistante WHERE Account ='${res[0].Id}' `
+            `SELECT  * FROM  assistante WHERE Account ='${resp[0].Id}' `
           );
           console.log(AssistanteInfo);
 
@@ -57,14 +57,14 @@ exports.DoctorProfil = async (req, Resp) => {
           );
 
           if (AssistanteInfo.length === 0)
-            Resp.status(201).json({ message: "Compte introuvable" });
+            res.status(201).json({ message: "Compte introuvable" });
           else {
             let ACCESS = jwt.sign(CabinetInfo[0].Id, process.env.ACCESS_TOKEN);
             console.log(ACCESS)
-            Resp.status(201).json({
+            res.status(201).json({
               infos: {
                 Assistante: AssistanteInfo[0],
-                AccountInfo: res[0],
+                AccountInfo: resp[0],
                 CabinetInfos: CabinetInfo[0],
                 Token: ACCESS,
               },
@@ -78,7 +78,7 @@ exports.DoctorProfil = async (req, Resp) => {
   }
 };
 
-exports.AddDoctor = async (req, resp) => {
+exports.AddDoctor = async (req, res) => {
   let Cab = req.params.cabinet;
   let id = req.user;
 
@@ -94,29 +94,29 @@ exports.AddDoctor = async (req, resp) => {
   let newAccount = new Account(req.body.login, req.body.password, "docteur");
 
   if (validationRegister(newDoctor, newAccount, newCabinet))
-    resp
+    res
       .status(403)
       .json({ message: validationRegister(newDoctor, newAccount, newCabinet) });
   else {
     try {
       if (id !== Cab)
-        resp
+        res
           .status(201)
           .json({ message: "Vous ne pouvez effectuer cette operation" });
       else {
-        let res = await sqlQuery(
+        let resp = await sqlQuery(
           `SELECT *  FROM account WHERE Login = '${newAccount.login}'`
         );
 
-        console.log(res);
+        console.log(resp);
 
-        if (res.length !== 0) {
-          if (res[0].ISVERIFIED) {
-            resp
+        if (resp.length !== 0) {
+          if (resp[0].ISVERIFIED) {
+            res
               .status(201)
               .json({ message: "Nom d'utilisateur déja existant" });
-          } else if (!res[0].ISVERIFIED) {
-            resp.status(201).json({
+          } else if (!resp[0].ISVERIFIED) {
+            res.status(201).json({
               message:
                 "Vous devez vérifier votre compte, un email vous a déja été envoyé sur votre adresse",
             });
@@ -157,9 +157,9 @@ exports.AddDoctor = async (req, resp) => {
           let query2 = `INSERT INTO docteur Set ?`;
 
           if (sqlQuery(query, newAccount)) {
-            let res = await sqlQuery(`SELECT * FROM account `);
+            let resp = await sqlQuery(`SELECT * FROM account `);
 
-            newDoctor.Account = res[res.length - 1].Id;
+            newDoctor.Account = resp[resp.length - 1].Id;
             newDoctor.Cabinet = Cab;
 
             if (sqlQuery(query2, newDoctor)) {
@@ -176,24 +176,24 @@ exports.AddDoctor = async (req, resp) => {
   }
 };
 
-exports.DeleteDoctor = async (req, resp) => {
+exports.DeleteDoctor = async (req, res) => {
   let IdDoctor = req.params.id;
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT Account  FROM docteur WHERE Id = '${IdDoctor}'`
       );
 
       if (sqlQuery(`DELETE FROM docteur WHERE Id ='${IdDoctor}'`)) {
-        if (sqlQuery(`DELETE FROM account WHERE Id ='${res[0].Account}'`)) {
-          resp
+        if (sqlQuery(`DELETE FROM account WHERE Id ='${resp[0].Account}'`)) {
+          res
             .status(201)
             .json({ message: "Le docteur a été supprimer avec succés" });
         }
@@ -204,7 +204,7 @@ exports.DeleteDoctor = async (req, resp) => {
   }
 };
 
-exports.UpdateDoctor = async (req, resp) => {
+exports.UpdateDoctor = async (req, res) => {
   let id = req.user;
   let Cab = req.ID;
 
@@ -219,7 +219,7 @@ exports.UpdateDoctor = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -231,7 +231,7 @@ exports.UpdateDoctor = async (req, resp) => {
           `UPDATE cabinet SET Adresse = '${req.body.Cabinet_modif.Adresse}', Email = '${req.body.Cabinet_modif.Email}', Tel = '${req.body.Cabinet_modif.Tel}' WHERE Id ='${req.body.Cabinet_modif.Id}'`
         )
       ) {
-        resp
+        res
           .status(201)
           .json({ message: "Les informations ont été modifier avec succés" });
       }
@@ -241,22 +241,22 @@ exports.UpdateDoctor = async (req, resp) => {
   }
 };
 
-exports.DoctorList = async (req, resp) => {
+exports.DoctorList = async (req, res) => {
   let Cab = req.params.cabinet;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT * FROM docteur WHERE Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
-        ListDoctor: res,
+      res.status(201).json({
+        ListDoctor: resp,
       });
     }
   } catch (err) {
@@ -264,7 +264,7 @@ exports.DoctorList = async (req, resp) => {
   }
 };
 
-exports.UpdateAvatarDocteur = async (req, resp) => {
+exports.UpdateAvatarDocteur = async (req, res) => {
   let IdDocteur = req.params.id;
   let Avatar = req.body.file;
   let id = req.user;
@@ -272,14 +272,14 @@ exports.UpdateAvatarDocteur = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query = `UPDATE  docteur Set Avatar = '${Avatar}'  WHERE id = '${IdDocteur}'`;
 
       if (sqlQuery(query)) {
-        resp
+        res
           .status(201)
           .json({ message: "Votre photo a été changer avec succés" });
         console.log("hello");

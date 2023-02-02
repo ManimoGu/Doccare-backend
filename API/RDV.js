@@ -3,7 +3,7 @@ const { RDV } = require("../models/RDV");
 const { Consultation } = require("../models/Consultation");
 const { FicheConsultation } = require("../models/FicheConsultation");
 
-exports.ADDRDV = async (req, resp) => {
+exports.ADDRDV = async (req, res) => {
   let Cab = req.params.id;
   let name = req.body.name;
   let id = req.user;
@@ -15,7 +15,7 @@ exports.ADDRDV = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -24,16 +24,16 @@ exports.ADDRDV = async (req, resp) => {
       );
 
       if (List.length === 0) {
-        resp.status(201).json({ message: "Ce patient n'existe pas" });
+        res.status(201).json({ message: "Ce patient n'existe pas" });
       } else {
-        let res = await sqlQuery(
+        let resp = await sqlQuery(
           ` SELECT * FROM rdv WHERE Patient = '${List[0].Id}' and Etat = 'en cours' `
         );
 
-        console.log(res);
+        console.log(resp);
 
-        if (res.length !== 0)
-          resp
+        if (resp.length !== 0)
+          res
             .status(201)
             .json({ message: "Ce patient a deja un rendez vous en cours" });
         else {
@@ -43,7 +43,7 @@ exports.ADDRDV = async (req, resp) => {
           let query = `INSERT INTO rdv Set ?`;
 
           if (sqlQuery(query, newrdv)) {
-            resp.status(201).json({ message: "Rdv added succesfully" });
+            res.status(201).json({ message: "Rdv added succesfully" });
           }
         }
       }
@@ -53,13 +53,13 @@ exports.ADDRDV = async (req, resp) => {
   }
 };
 
-exports.RDVList = async (req, resp) => {
+exports.RDVList = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -67,33 +67,33 @@ exports.RDVList = async (req, resp) => {
         `SELECT * FROM patient join rdv on patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({ listCons: List });
+      res.status(201).json({ listCons: List });
     }
   } catch (err) {
     console.log(err.message);
   }
 };
 
-exports.DeleteRDV = async (req, resp) => {
+exports.DeleteRDV = async (req, res) => {
   let RDV = req.params.id;
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       if (sqlQuery(`DELETE FROM rdv WHERE Id = '${RDV}'`))
-        resp.status(201).json({ message: "RDV supprimer avec success" });
+        res.status(201).json({ message: "RDV supprimer avec success" });
     }
   } catch {
     (err) => console.log(err.message);
   }
 };
 
-exports.UpdateRDV = async (req, resp) => {
+exports.UpdateRDV = async (req, res) => {
   let RDV = req.params.id;
   let id = req.user;
   let Cab = req.ID;
@@ -102,14 +102,14 @@ exports.UpdateRDV = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query1 = `UPDATE rdv Set Date = '${Date[0]}', Heure = '${Date[1]}', Type = '${req.body.Type}' WHERE id = '${RDV}'`;
 
       if (sqlQuery(query1)) {
-        resp.status(201).json({ message: "Update Success" });
+        res.status(201).json({ message: "Update Success" });
       }
     }
   } catch {
@@ -117,13 +117,13 @@ exports.UpdateRDV = async (req, resp) => {
   }
 };
 
-exports.RDVNbr = async (req, resp) => {
+exports.RDVNbr = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -131,7 +131,7 @@ exports.RDVNbr = async (req, resp) => {
         `SELECT COUNT(*) as nbr FROM rdv WHERE rdv.Cabinet = '${Cab}' `
       );
 
-      resp.status(201).json({
+      res.status(201).json({
         NbrRDV: ConsList[0].nbr,
       });
     }
@@ -140,7 +140,7 @@ exports.RDVNbr = async (req, resp) => {
   }
 };
 
-exports.TypeUpdate = async (req, resp) => {
+exports.TypeUpdate = async (req, res) => {
   let RDV = req.params.id;
   let Patient = req.params.Patient;
   let id = req.user;
@@ -149,7 +149,7 @@ exports.TypeUpdate = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -158,7 +158,7 @@ exports.TypeUpdate = async (req, resp) => {
       );
       console.log(consult);
       if (consult.length !== 0) {
-        resp.status(201).json({
+        res.status(201).json({
           message:
             "Il y a deja une consultation qui correspond a ce rendez-vous",
         });
@@ -182,16 +182,16 @@ exports.TypeUpdate = async (req, resp) => {
         let query1 = `INSERT INTO fiche_consultation Set ?`;
 
         if (sqlQuery(query, newconsultation)) {
-          let res = await sqlQuery(`SELECT * FROM consultation`);
+          let resp = await sqlQuery(`SELECT * FROM consultation`);
 
           let dossier = await sqlQuery(
             `SELECT Id FROM dossier_medical WHERE Patient = '${Patient}'`
           );
 
-          newFichConsultation.Consultation = res[res.length - 1].Id;
+          newFichConsultation.Consultation = resp[resp.length - 1].Id;
           newFichConsultation.Dossier_medical = dossier[0].Id;
           if (sqlQuery(query1, newFichConsultation)) {
-            resp.status(201).json({ message: "Traitement validé" });
+            res.status(201).json({ message: "Traitement validé" });
           }
         }
       }

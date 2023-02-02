@@ -1,7 +1,7 @@
 const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 
-exports.DashList = async (req, resp) => {
+exports.DashList = async (req, res) => {
   let Cab = req.params.id;
 
   try {
@@ -9,7 +9,7 @@ exports.DashList = async (req, resp) => {
       `SELECT * FROM patient join rdv on patient.Id = rdv.Patient WHERE Cabinet = '${Cab}'`
     );
 
-    resp.status(201).json({
+    res.status(201).json({
       listCons: List,
     });
   } catch (err) {
@@ -17,13 +17,13 @@ exports.DashList = async (req, resp) => {
   }
 };
 
-exports.ConsultationList = async (req, resp) => {
+exports.ConsultationList = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -31,7 +31,7 @@ exports.ConsultationList = async (req, resp) => {
         `SELECT * FROM consultation   JOIN  rdv on consultation.Rdv = rdv.id  join patient on patient.id = rdv.Patient WHERE Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
+      res.status(201).json({
         AllCons: List,
       });
     }
@@ -40,13 +40,13 @@ exports.ConsultationList = async (req, resp) => {
   }
 };
 
-exports.ConsultationNbr = async (req, resp) => {
+exports.ConsultationNbr = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -54,7 +54,7 @@ exports.ConsultationNbr = async (req, resp) => {
         `SELECT COUNT(*) as nbr FROM consultation  JOIN rdv ON consultation.RDV = rdv.Id WHERE rdv.Cabinet = '${Cab}' `
       );
 
-      resp.status(201).json({
+      res.status(201).json({
         NbrConsultation: ConsList[0].nbr,
       });
     }
@@ -63,14 +63,14 @@ exports.ConsultationNbr = async (req, resp) => {
   }
 };
 
-exports.ConsultationTotal = async (req, resp) => {
+exports.ConsultationTotal = async (req, res) => {
 
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
@@ -78,7 +78,7 @@ exports.ConsultationTotal = async (req, resp) => {
         `SELECT SUM(Montant) as somme FROM consultation JOIN rdv ON consultation.RDV = rdv.Id WHERE rdv.Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
+      res.status(201).json({
         TotalConsultation: total[0].somme,
       });
     }
@@ -87,20 +87,20 @@ exports.ConsultationTotal = async (req, resp) => {
   }
 };
 
-exports.UpdateConsultation = async (req, resp) => {
+exports.UpdateConsultation = async (req, res) => {
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query1 = `UPDATE consultation Set Description = '${req.body.Description}', Motif = '${req.body.Motif}', Montant = '${req.body.Montant}',Status = '${req.body.Status}'  WHERE RDV = '${req.body.Id}'`;
 
       if (sqlQuery(query1)) {
-        resp.status(201).json({ message: "Update Success" });
+        res.status(201).json({ message: "Update Success" });
       }
     }
   } catch {

@@ -2,22 +2,22 @@ const { sqlQuery } = require("../Helpers/Promise");
 const randomstring = require("randomstring");
 const { Response } = require("../models/Response");
 
-exports.ReviewsNbr = async (req, resp) => {
+exports.ReviewsNbr = async (req, res) => {
   let Cab = req.params.id;
   let id = req.user;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT COUNT(*) as nbr FROM feedback WHERE Cabinet = ${Cab} and type = 'Avis'`
       );
 
-      resp.status(201).json({
-        NbrAvis: res[0].nbr,
+      res.status(201).json({
+        NbrAvis: resp[0].nbr,
       });
     }
   } catch (err) {
@@ -25,23 +25,23 @@ exports.ReviewsNbr = async (req, resp) => {
   }
 };
 
-exports.ListMessage = async (req, resp) => {
+exports.ListMessage = async (req, res) => {
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(
+      let resp = await sqlQuery(
         `SELECT feedback.Id as Id, Commentaire, Type, Date, patient.Id as Patient_Id, Nom, Prénom, Civilité, CIN, Date_naissance, Tel, Situation_familiale, Mutuelle, Adresse, Email, Avatar, Account from feedback join patient on feedback.Patient = patient.Id WHERE Type = 'Message'`
       );
       
-      console.log(res)
-      resp.status(201).json({
-        ListMessage: res,
+      console.log(resp)
+      res.status(201).json({
+        ListMessage: resp,
       });
     }
   } catch (err) {
@@ -49,7 +49,7 @@ exports.ListMessage = async (req, resp) => {
   }
 };
 
-exports.AddResp = async (req, resp) => {
+exports.AddResp = async (req, res) => {
   let id = req.user;
   let Cab = req.ID;
 
@@ -64,14 +64,14 @@ exports.AddResp = async (req, resp) => {
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
       let query = `INSERT INTO reponse Set ?`;
 
       if (sqlQuery(query, newResponse)) {
-        resp
+        res
           .status(201)
           .json({ message: "Les informations ont été modifier avec succés" });
       }
@@ -81,23 +81,23 @@ exports.AddResp = async (req, resp) => {
   }
 };
 
-exports.getResponse = async (req, resp) => {
+exports.getResponse = async (req, res) => {
   let Feed = req.params.id;
   let id = req.user;
   let Cab = req.ID;
 
   try {
     if (id !== Cab)
-      resp
+      res
         .status(201)
         .json({ message: "Vous ne pouvez effectuer cette operation" });
     else {
-      let res = await sqlQuery(`SELECT * FROM reponse Where Feed = '${Feed}'`);
+      let resp = await sqlQuery(`SELECT * FROM reponse Where Feed = '${Feed}'`);
 
-      console.log(res);
+      console.log(resp);
 
-      resp.status(201).json({
-        ListResp: res,
+      res.status(201).json({
+        ListResp: resp,
       });
     }
   } catch (err) {
