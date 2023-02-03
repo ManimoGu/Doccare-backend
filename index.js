@@ -1,7 +1,7 @@
 
 
 const express = require("express")
-const cors = require("cors")
+// const cors = require("cors")
 const bodyparser = require("body-parser")
 const { register, verify, Signin, resend, forgot, resetPass, reseSettingtPass, UploadFile} = require("./API/auth");
 const { DoctorProfil, AddDoctor, DeleteDoctor, UpdateDoctor, DoctorList, UpdateAvatarDocteur } = require("./API/doctor");
@@ -37,24 +37,24 @@ app.listen(port, (req, resp) => {
 //looks at requests where the content-type : application-json (header).
   app.use(bodyparser.json())
 
-  const corsOptions = {
-    origin: '*',
-    optionsSuccessStatus: 200,
-    credentials: true
+//   const corsOptions = {
+//     origin: '*',
+//     optionsSuccessStatus: 200,
+//     credentials: true
     
-}
+// }
 
-  app.use(cors(corsOptions))
+  // app.use(cors(corsOptions))
 
   app.use(express.static('API'))
 
   
-app.use((req,res,next)=>{
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-})
+// app.use((req,res,next)=>{
+//   res.setHeader('Access-Control-Allow-Origin', '*');
+//   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE');
+//   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+//   next();
+// })
 
   app.get("/",(req,res)=>{
 
