@@ -86,31 +86,31 @@ app.use(
 //looks at requests where the content-type : application-json (header).
 app.use(bodyparser.json());
 
-const corsOptions = {
-  origin: "*",
-  optionsSuccessStatus: 200,
-  credentials: true,
-};
+// const corsOptions = {
+//   origin: "*",
+//   optionsSuccessStatus: 200,
+//   credentials: true,
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 
 app.use(express.static("API"));
 
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  // another common pattern
-  // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-  next();
-});
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   // another common pattern
+//   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET,OPTIONS,PATCH,DELETE,POST,PUT"
+//   );
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
+//   );
+//   next();
+// });
 
 app.get("/", (req, res) => {
   res.send("hello");
