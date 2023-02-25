@@ -59,6 +59,7 @@ const {
 const fileupload = require("express-fileupload");
 
 const { Access } = require("./Helpers/JwtVerification");
+const {VercelCors} = require("./Helpers/VercelCors") 
 //create an app
 
 const app = express();
@@ -93,6 +94,7 @@ app.use(bodyparser.json());
 // };
 
 app.use(cors());
+app.use(VercelCors())
 
 app.use(express.static("API"));
 
