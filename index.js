@@ -59,7 +59,7 @@ const {
 const fileupload = require("express-fileupload");
 
 const { Access } = require("./Helpers/JwtVerification");
-const {VercelCors} = require("./Helpers/VercelCors") 
+
 //create an app
 
 const app = express();
@@ -94,25 +94,27 @@ app.use(bodyparser.json());
 // };
 
 app.use(cors());
-app.use(VercelCors())
+app.use((req, res, next) => {
+    //set header first to allow request or origin domain (value can be different)
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS, DELETE');
+
+//---- other code
+
+ //Preflight CORS handler
+    if(req.method === 'OPTIONS') {
+        return res.status(200).json(({
+            body: "OK"
+        }))
+    }
+    next()
+})
 
 app.use(express.static("API"));
 
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   // another common pattern
-//   // res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET,OPTIONS,PATCH,DELETE,POST,PUT"
-//   );
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-//   );
-//   next();
-// });
+
 
 app.get("/", (req, res) => {
   res.send("hello");
