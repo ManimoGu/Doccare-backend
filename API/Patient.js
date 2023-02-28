@@ -29,7 +29,7 @@ exports.PatientList = async (req, res) => {
        FROM patient  JOIN fiche_medical ON patient.Id = fiche_medical.Patient JOIN dossier_medical on patient.id = dossier_medical.Patient WHERE dossier_medical.Cabinet = '${Cab}'`
       );
 
-      resp.status(201).json({
+      res.status(201).json({
         ListPatient: resp,
         dir: __dirname,
       });

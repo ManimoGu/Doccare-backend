@@ -3,9 +3,9 @@ const mysql = require("mysql");
 //create mysql connection
 const CNX = mysql.createConnection({
        
-    host : 'tabibcom.c3e95rou1qgl.us-east-1.rds.amazonaws.com',
-    user : 'admin', 
-    password : 'amouna**91',
+    host : 'localhost',
+    user : 'root', 
+    password : '',
     database : 'doccare'
 
 })

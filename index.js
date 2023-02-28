@@ -94,23 +94,7 @@ app.use(bodyparser.json());
 // };
 
 app.use(cors());
-app.use((req, res, next) => {
-    //set header first to allow request or origin domain (value can be different)
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, OPTIONS, DELETE');
 
-//---- other code
-
- //Preflight CORS handler
-    if(req.method === 'OPTIONS') {
-        return res.status(200).json(({
-            body: "OK"
-        }))
-    }
-    next()
-})
 
 app.use(express.static("API"));
 
@@ -126,7 +110,7 @@ app.post("/api/auth/register", register);
 
 app.get("/api/verify-email/:login/code/:token", verify);
 
-app.get("/api/Signin/:login/pass/:password", DoctorProfil);
+app.post("/api/Signin/:login/pass/:password", DoctorProfil);
 
 app.get("/api/resend/:login/code/:token", resend);
 
