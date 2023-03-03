@@ -27,5 +27,8 @@
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.20",
     "randomstring": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/express-fileupload": "^1.4.1"
   }
 }
